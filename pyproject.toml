@@ -1,0 +1,7 @@
+[project]
+name = "alphaflow"
+version = "0.0.1"
+description = "AlphaFlow is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
