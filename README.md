@@ -195,8 +195,6 @@ We welcome contributions from the community! To get started:
 2. **Implement** or **fix** a feature.
 3. **Submit** a pull request describing your changes.
 
-Check out our [Contribution Guidelines](./CONTRIBUTING.md) (placeholder) for details on style, testing, and versioning.
-
 ---
 
 ## License
