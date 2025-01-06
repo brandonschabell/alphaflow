@@ -3,7 +3,7 @@ import logging
 
 from alphaflow import Broker
 from alphaflow.enums import Side
-from alphaflow.events.order_event import OrderEvent
+from alphaflow.events import OrderEvent
 
 logger = logging.getLogger(__name__)
 

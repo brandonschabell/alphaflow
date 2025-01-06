@@ -111,46 +111,51 @@
 ## Getting Started
 
 1. **Install AlphaFlow**  
-   \```bash
-   pip install alphaflow
-   \```
+    \```bash
+    pip install alphaflow
+    \```
 
 2. **Basic Example**  
-   ```python
-   import alphaflow as af
+    ```python
+    from datetime import datetime
 
-   # 1. Initialize EventBus
-   event_bus = af.EventBus()
+    import alphaflow as af
 
-   # 2. Create DataFeed (e.g., CSV-based daily bars)
-   data_feed = af.datafeeds.CSVDataFeed(
-       file_path="historical_data.csv",
-       event_bus=event_bus
-   )
+    # 1. Initialize AlphaFlow
+    flow = af.AlphaFlow()
+    flow.set_cash(100000)
+    flow.set_backtest_start_timestamp(datetime(1990, 2, 10))
+    flow.set_backtest_end_timestamp(datetime(2025, 1, 5))
 
-   # 3. Initialize Strategy
-   strategy = af.strategies.SimpleMovingAverageStrategy(
-       event_bus=event_bus,
-       short_window=10,
-       long_window=30
-   )
+    # 2. Create DataFeed (e.g., CSV-based daily bars)
+    flow.add_data_feed(
+        af.data_feeds.CSVDataFeed(
+            file_path="historical_data.csv",
+        )
+    )
 
-   # 4. Create Broker
-   broker = af.brokers.SimulatedBroker(
-       event_bus=event_bus,
-       slippage_model=af.slippage.FixedSlippage(0.02),
-       commission_model=af.commissions.PerShare(0.005)
-   )
+    # 3. Initialize Strategy
+    flow.add_strategy(
+        af.strategies.BuyAndHoldStrategy(
+            symbol="SPY",
+            target_weight=0.9
+        )
+    )
+    flow.add_strategy(
+        af.strategies.BuyAndHoldStrategy(
+            symbol="BND",
+            target_weight=0.1
+        )
+    )
 
-   # 5. Initialize Portfolio
-   portfolio = af.portfolio.Portfolio(
-       event_bus=event_bus,
-       initial_cash=100000
-   )
+    # 4. Create Broker
+    flow.set_broker(
+        af.brokers.SimpleBroker()
+    )
 
-   # 6. Run the backtest
-   data_feed.run()   # This drives events into the system
-   ```
+    # 5. Run the backtest
+    flow.run()
+    ```
 
 3. **Monitor Results**  
    - Use built-in **analytics** or your own custom module to generate metrics and charts.  

@@ -4,9 +4,9 @@ import logging
 import pytest
 
 from alphaflow import AlphaFlow
-from alphaflow.brokers.simple_broker import SimpleBroker
-from alphaflow.data_feeds.csv_data_feed import CSVDataFeed
-from alphaflow.strategies.buy_and_hold_strategy import BuyAndHoldStrategy
+from alphaflow.brokers import SimpleBroker
+from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.strategies import BuyAndHoldStrategy
 
 
 def test_simple_backtest():

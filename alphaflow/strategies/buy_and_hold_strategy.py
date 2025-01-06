@@ -2,8 +2,7 @@ import logging
 
 from alphaflow import Strategy
 from alphaflow.enums import OrderType, Side, Topic
-from alphaflow.events.market_data_event import MarketDataEvent
-from alphaflow.events.order_event import OrderEvent
+from alphaflow.events import MarketDataEvent, OrderEvent
 
 logger = logging.getLogger(__name__)
 
