@@ -38,11 +38,15 @@ class DataFeed:
         raise NotImplementedError
 
 
-class Portfolio:
+class Portfolio(Subscriber):
     def __init__(self, alpha_flow: AlphaFlow):
         self._alpha_flow = alpha_flow
         self._cash = 0
         self.positions = {}
+
+    def topic_subscriptions(self) -> list[Topic]:
+        """Returns the topics to subscribe to."""
+        return [Topic.FILL]
 
     def set_cash(self, cash: float):
         self._cash = cash
@@ -67,6 +71,13 @@ class Portfolio:
             self.get_position_value(symbol, timestamp) for symbol in self.positions
         )
         return self._cash + position_value
+
+    def read_event(self, event: Event) -> None:
+        """Reads the event."""
+
+        cost = event.fill_price * event.fill_qty  # Can be positive or negative
+        self.update_cash(-cost)
+        self.update_position(event.symbol, event.fill_qty)
 
 
 class Strategy(Subscriber):
@@ -95,6 +106,8 @@ class AlphaFlow:
         self.data_start_timestamp: datetime | None = None
         self.backtest_start_timestamp: datetime | None = None
         self.backtest_end_timestamp: datetime | None = None
+        for topic in self.portfolio.topic_subscriptions():
+            self.event_bus.subscribe(topic, self.portfolio)
 
     def add_data_feed(self, data_feed: DataFeed):
         data_feed.set_alpha_flow(self)

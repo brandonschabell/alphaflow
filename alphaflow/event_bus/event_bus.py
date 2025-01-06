@@ -1,8 +1,11 @@
 from collections import defaultdict
+import logging
 
 from alphaflow.enums import Topic
 from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
+
+logger = logging.getLogger(__name__)
 
 
 class EventBus:
@@ -40,4 +43,5 @@ class EventBus:
             event: The event to publish.
         """
         for subscriber in self.subscribers[topic]:
+            logger.debug("Publishing event %s to subscriber %s", event, subscriber)
             subscriber.read_event(event)

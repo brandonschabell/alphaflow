@@ -27,17 +27,8 @@ class Topic(Enum):
     #: Market data topic.
     MARKET_DATA = auto()
 
-    #: Earnings topic.
-    EARNINGS = auto()
-
-    #: News topic.
-    NEWS = auto()
-
     #: Order topic.
     ORDER = auto()
 
     #: Fill topic.
     FILL = auto()
-
-    #: Portfolio update topic.
-    PORTFOLIO_UPDATE = auto()

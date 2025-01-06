@@ -16,7 +16,6 @@ class BuyAndHoldStrategy(Strategy):
         return [Topic.MARKET_DATA]
 
     def read_event(self, event: MarketDataEvent):
-        logger.debug(f"Strategy received event: {event}")
         if (
             self._alpha_flow.backtest_start_timestamp
             and event.timestamp < self._alpha_flow.backtest_start_timestamp
@@ -36,35 +35,17 @@ class BuyAndHoldStrategy(Strategy):
         )
         target_value = portfolio_value * self.target_weight
         purchase_value = target_value - position_value
-        logger.debug("PURCHASE VALUE: %s", purchase_value)
         if abs(purchase_value) < 0.01:
             return
         shares_needed = purchase_value / event.close
-        if shares_needed > 0:
-            logger.info(
-                f"Buying {shares_needed} shares of {self.symbol} at {event.close} on {event.timestamp}"
-            )
-            self._alpha_flow.event_bus.publish(
-                Topic.ORDER,
-                OrderEvent(
-                    timestamp=event.timestamp,
-                    symbol=self.symbol,
-                    side=Side.BUY,
-                    qty=shares_needed,
-                    order_type=OrderType.MARKET,
-                ),
-            )
-        else:
-            logger.info(
-                f"Selling {abs(shares_needed)} shares of {self.symbol} at {event.close} on {event.timestamp}"
-            )
-            self._alpha_flow.event_bus.publish(
-                Topic.ORDER,
-                OrderEvent(
-                    timestamp=event.timestamp,
-                    symbol=self.symbol,
-                    side=Side.SELL,
-                    qty=-shares_needed,
-                    order_type=OrderType.MARKET,
-                ),
-            )
+        side = Side.BUY if shares_needed > 0 else Side.SELL
+        self._alpha_flow.event_bus.publish(
+            Topic.ORDER,
+            OrderEvent(
+                timestamp=event.timestamp,
+                symbol=self.symbol,
+                side=side,
+                qty=abs(shares_needed),
+                order_type=OrderType.MARKET,
+            ),
+        )
