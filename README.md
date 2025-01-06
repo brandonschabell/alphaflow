@@ -111,9 +111,9 @@
 ## Getting Started
 
 1. **Install AlphaFlow**  
-    \```bash
+    ```bash
     pip install alphaflow
-    \```
+    ```
 
 2. **Basic Example**  
     ```python
