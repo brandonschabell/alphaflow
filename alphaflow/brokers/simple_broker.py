@@ -2,8 +2,8 @@ from datetime import datetime
 import logging
 
 from alphaflow import Broker
-from alphaflow.enums import Side
-from alphaflow.events import OrderEvent
+from alphaflow.enums import Side, Topic
+from alphaflow.events import FillEvent, OrderEvent
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +16,9 @@ class SimpleBroker(Broker):
 
     def read_event(self, event: OrderEvent) -> None:
         """Reads the event."""
-        logger.info(f"Broker received event: {event}")
         if self._can_execute_order(event):
-            self._execute_order(event)
+            fill_event = self._execute_order(event)
+            self._alpha_flow.event_bus.publish(Topic.FILL, fill_event)
         else:
             logger.warning("Order cannot be executed.")
 
@@ -37,17 +37,15 @@ class SimpleBroker(Broker):
         else:
             return self._alpha_flow.portfolio.get_position(event.symbol) >= event.qty
 
-    def _execute_order(self, event: OrderEvent) -> None:
+    def _execute_order(self, event: OrderEvent) -> FillEvent:
         price = self._get_price(event.symbol, event.timestamp)
-        cost = event.qty * price
 
-        if event.side is Side.BUY:
-            self._alpha_flow.portfolio.update_cash(-cost)
-            self._alpha_flow.portfolio.update_position(event.symbol, event.qty)
-        else:
-            self._alpha_flow.portfolio.update_cash(cost)
-            self._alpha_flow.portfolio.update_position(event.symbol, -event.qty)
+        quantity = event.qty if event.side is Side.BUY else -event.qty
 
-        logger.info(f"Order executed: {event}")
-        logger.info(f"Portfolio cash: {self._get_cash()}")
-        logger.info(f"Portfolio positions: {self._alpha_flow.portfolio.positions}")
+        return FillEvent(
+            timestamp=event.timestamp,
+            symbol=event.symbol,
+            fill_price=price,
+            fill_qty=quantity,
+            commission=0,
+        )
