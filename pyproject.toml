@@ -1,7 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "alphaflow"
 version = "0.0.1"
 description = "AlphaFlow is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development."
 readme = "README.md"
+license = {text = "MIT"}
 requires-python = ">=3.10"
+authors = [
+    {name = "Brandon Schabell", email = "brandonschabell@gmail.com"}
+]
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Financial and Insurance Industry',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Office/Business :: Financial',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+    'Topic :: Software Development',
+]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/brandonschabell/alphaflow"
+Repository = "https://github.com/brandonschabell/alphaflow"
+Issues = "https://github.com/brandonschabell/alphaflow/issues"
+Changelog = "https://github.com/brandonschabell/alphaflow/releases"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "alphaflow",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.4",
+    "ruff>=0.8.6",
+]
