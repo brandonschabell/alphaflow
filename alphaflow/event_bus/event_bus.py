@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from alphaflow.constants import Topic
+from alphaflow.enums import Topic
 from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
 

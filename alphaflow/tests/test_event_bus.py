@@ -1,7 +1,9 @@
-from alphaflow.constants import Topic
+from datetime import datetime
+from alphaflow.enums import Topic
 from alphaflow.event_bus.event_bus import EventBus
 from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
+from alphaflow.events.market_data_event import BarTimeWindow, MarketDataEvent
 
 
 def test_subscribe_unsubscribe_publish():
@@ -17,7 +19,18 @@ def test_subscribe_unsubscribe_publish():
     event_bus = EventBus()
     subscriber = _TestSubscriber()
     topic = Topic.MARKET_DATA
-    event = Event()
+    event = MarketDataEvent(
+        timestamp=datetime.now(),
+        symbol="AAPL",
+        bar_time_window=BarTimeWindow(
+            start_timestamp=datetime.now(), end_timestamp=datetime.now()
+        ),
+        open=1.0,
+        high=1.0,
+        low=1.0,
+        close=1.0,
+        volume=1.0,
+    )
 
     event_bus.subscribe(topic, subscriber)
     assert subscriber in event_bus.subscribers[topic]
