@@ -28,7 +28,9 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Information Analysis',
     'Topic :: Software Development',
 ]
-dependencies = []
+dependencies = [
+    "pandas>=2.2.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/brandonschabell/alphaflow"
