@@ -1,3 +1,3 @@
-from alphaflow.analyzers.chart_analyzer import DefaultAnalyzer
+from alphaflow.analyzers.default_analyzer import DefaultAnalyzer
 
 __all__ = ["DefaultAnalyzer"]
