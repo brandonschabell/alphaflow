@@ -1,10 +1,10 @@
 import logging
 
 from alphaflow import AlphaFlow
-from alphaflow.analyzers.chart_analyzer import DefaultAnalyzer
-from alphaflow.brokers.simple_broker import SimpleBroker
-from alphaflow.data_feeds.fmp_data_feed import FMPDataFeed
-from alphaflow.strategies.buy_and_hold_strategy import BuyAndHoldStrategy
+from alphaflow.analyzers import DefaultAnalyzer
+from alphaflow.brokers import SimpleBroker
+from alphaflow.data_feeds import FMPDataFeed
+from alphaflow.strategies import BuyAndHoldStrategy
 
 
 def create_analysis(title: str, file_name: str, weights: dict[str, float]) -> None:

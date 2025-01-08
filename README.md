@@ -128,13 +128,17 @@
     flow.set_backtest_end_timestamp(datetime(2025, 1, 5))
 
     # 2. Create DataFeed (e.g., CSV-based daily bars)
-    flow.add_data_feed(
+    flow.set_data_feed(
         af.data_feeds.CSVDataFeed(
             file_path="historical_data.csv",
         )
     )
 
-    # 3. Initialize Strategy
+    # 3. Set Equity Universe
+    flow.add_equity("BND")
+    flow.add_equity("SPY")
+
+    # 4. Initialize Strategy
     flow.add_strategy(
         af.strategies.BuyAndHoldStrategy(
             symbol="SPY",
@@ -148,12 +152,12 @@
         )
     )
 
-    # 4. Create Broker
+    # 5. Create Broker
     flow.set_broker(
         af.brokers.SimpleBroker()
     )
 
-    # 5. Run the backtest
+    # 6. Run the backtest
     flow.run()
     ```
 
