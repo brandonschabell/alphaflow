@@ -13,12 +13,12 @@ def test_simple_backtest():
     logging.basicConfig(level=logging.DEBUG)
 
     af = AlphaFlow()
-    af.add_data_feed(
+    af.set_data_feed(
         CSVDataFeed(
-            "/Users/brandonschabell/Desktop/git/alphaflow/alphaflow/tests/data/AAPL.csv",
-            symbol_override="AAPL",
+            "/Users/brandonschabell/Desktop/git/alphaflow/alphaflow/tests/data/AAPL.csv"
         )
     )
+    af.add_equity("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
     af.set_broker(SimpleBroker())
     af.set_cash(1000)

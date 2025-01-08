@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from alphaflow import DataFeed
-from alphaflow.events.market_data_event import BarTimeWindow, MarketDataEvent
+from alphaflow.events.market_data_event import MarketDataEvent
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,6 @@ class CSVDataFeed(DataFeed):
         col_low: str = "Low",
         col_close: str = "Close",
         col_volume: str = "Volume",
-        symbol_override: str | None = None,
     ) -> None:
         self.file_path = file_path
         self._col_timestamp = col_timestamp
@@ -33,10 +32,12 @@ class CSVDataFeed(DataFeed):
         self._col_low = col_low
         self._col_close = col_close
         self._col_volume = col_volume
-        self._symbol_override = symbol_override
 
     def run(
-        self, start_timestamp: datetime | None, end_timestamp: datetime | None
+        self,
+        symbol: str,
+        start_timestamp: datetime | None,
+        end_timestamp: datetime | None,
     ) -> Generator[MarketDataEvent, None, None]:
         logger.debug("Opening CSV file...")
         df = pd.read_csv(self.file_path, parse_dates=[self._col_timestamp])
@@ -49,12 +50,13 @@ class CSVDataFeed(DataFeed):
             self._col_open,
             self._col_volume,
         }
-        if not self._symbol_override:
-            required_cols.add(self._col_symbol)
 
         missing_cols = required_cols.difference(df.columns)
         if missing_cols:
             raise ValueError(f"Missing columns: {missing_cols}")
+
+        if self._col_symbol in df.columns:
+            df = df.loc[df[self._col_symbol] == symbol]
 
         for _, row in df.iterrows():
             if start_timestamp and row[self._col_timestamp] < start_timestamp:
@@ -63,16 +65,8 @@ class CSVDataFeed(DataFeed):
                 continue
 
             event = MarketDataEvent(
-                timestamp=row[
-                    self._col_timestamp
-                ],  # TODO: Timestamp should be AFTER the bar time window
-                symbol=self._symbol_override or row[self._col_symbol],
-                bar_time_window=BarTimeWindow(
-                    start_timestamp=row[self._col_timestamp],
-                    end_timestamp=row[
-                        self._col_timestamp
-                    ],  # TODO: End timestamp should be AFTER the start timestamp
-                ),
+                timestamp=row[self._col_timestamp],
+                symbol=symbol,
                 open=row[self._col_open],
                 high=row[self._col_high],
                 low=row[self._col_low],

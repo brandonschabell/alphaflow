@@ -16,6 +16,8 @@ class BuyAndHoldStrategy(Strategy):
         return [Topic.MARKET_DATA]
 
     def read_event(self, event: MarketDataEvent):
+        if event.symbol != self.symbol:
+            return
         if (
             self._alpha_flow.backtest_start_timestamp
             and event.timestamp < self._alpha_flow.backtest_start_timestamp

@@ -2,12 +2,34 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Generator
 from datetime import datetime
+import logging
 
 from alphaflow.enums import Topic
 from alphaflow.event_bus.event_bus import EventBus
 from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
 from alphaflow.events.market_data_event import MarketDataEvent
+
+logger = logging.getLogger(__name__)
+
+
+class Analyzer(Subscriber):
+    """Defines the interface for analyzers."""
+
+    def topic_subscriptions(self) -> list[Topic]:
+        """Returns the topics to subscribe to."""
+        raise NotImplementedError
+
+    def set_alpha_flow(self, alpha_flow: AlphaFlow) -> None:
+        self._alpha_flow = alpha_flow
+
+    def read_event(self, event: Event) -> None:
+        """Reads the event."""
+        raise NotImplementedError
+
+    def run(self) -> None:
+        """Runs the analyzer."""
+        raise NotImplementedError
 
 
 class Broker(Subscriber):
@@ -32,7 +54,10 @@ class DataFeed:
         self._alpha_flow = alpha_flow
 
     def run(
-        self, start_timestamp: datetime | None, end_timestamp: datetime | None
+        self,
+        symbol: str,
+        start_timestamp: datetime | None,
+        end_timestamp: datetime | None,
     ) -> Generator[MarketDataEvent, None, None]:
         """Runs the data feed."""
         raise NotImplementedError
@@ -66,11 +91,26 @@ class Portfolio(Subscriber):
     def get_position_value(self, symbol: str, timestamp: datetime) -> float:
         return self.get_position(symbol) * self._alpha_flow.get_price(symbol, timestamp)
 
-    def get_portfolio_value(self, timestamp: datetime) -> float:
-        position_value = sum(
+    def get_positions_value(self, timestamp: datetime) -> float:
+        return sum(
             self.get_position_value(symbol, timestamp) for symbol in self.positions
         )
-        return self._cash + position_value
+
+    def get_portfolio_value(self, timestamp: datetime) -> float:
+        return self._cash + self.get_positions_value(timestamp)
+
+    def get_buying_power(self, margin: float, timestamp: datetime) -> float:
+        return self.get_portfolio_value(timestamp) * margin - self.get_positions_value(
+            timestamp
+        )
+
+    def get_benchmark_values(self) -> dict[datetime, float]:
+        if self._alpha_flow.benchmark is None:
+            return {}
+        return {
+            timestamp: self._alpha_flow.get_price(self._alpha_flow.benchmark, timestamp)
+            for timestamp in self._alpha_flow.get_timestamps()
+        }
 
     def read_event(self, event: Event) -> None:
         """Reads the event."""
@@ -99,9 +139,12 @@ class AlphaFlow:
     def __init__(self):
         self.event_bus = EventBus()
         self.portfolio = Portfolio(self)
-        self.data_feeds: list[DataFeed] = []
         self.strategies: list[Strategy] = []
+        self.analyzers: list[Analyzer] = []
+        self.universe: set[str] = set()
+        self.data_feed: DataFeed | None = None
         self.broker: Broker | None = None
+        self.benchmark: str | None = None
         self._data: dict[str, list[MarketDataEvent]] = defaultdict(list)
         self.data_start_timestamp: datetime | None = None
         self.backtest_start_timestamp: datetime | None = None
@@ -109,15 +152,28 @@ class AlphaFlow:
         for topic in self.portfolio.topic_subscriptions():
             self.event_bus.subscribe(topic, self.portfolio)
 
-    def add_data_feed(self, data_feed: DataFeed):
+    def set_benchmark(self, symbol: str):
+        self.universe.add(symbol)
+        self.benchmark = symbol
+
+    def add_equity(self, symbol: str):
+        self.universe.add(symbol)
+
+    def set_data_feed(self, data_feed: DataFeed):
         data_feed.set_alpha_flow(self)
-        self.data_feeds.append(data_feed)
+        self.data_feed = data_feed
 
     def add_strategy(self, strategy: Strategy):
         strategy.set_alpha_flow(self)
         for topic in strategy.topic_subscriptions():
             self.event_bus.subscribe(topic, strategy)
         self.strategies.append(strategy)
+
+    def add_analyzer(self, analyzer: Analyzer):
+        analyzer.set_alpha_flow(self)
+        for topic in analyzer.topic_subscriptions():
+            self.event_bus.subscribe(topic, analyzer)
+        self.analyzers.append(analyzer)
 
     def set_broker(self, broker: Broker):
         broker.set_alpha_flow(self)
@@ -128,13 +184,19 @@ class AlphaFlow:
     def set_cash(self, cash: float):
         self.portfolio.set_cash(cash)
 
-    def set_data_start_timestamp(self, timestamp: datetime):
+    def set_data_start_timestamp(self, timestamp: datetime | str):
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp)
         self.data_start_timestamp = timestamp
 
-    def set_backtest_start_timestamp(self, timestamp: datetime):
+    def set_backtest_start_timestamp(self, timestamp: datetime | str):
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp)
         self.backtest_start_timestamp = timestamp
 
-    def set_backtest_end_timestamp(self, timestamp: datetime):
+    def set_backtest_end_timestamp(self, timestamp: datetime | str):
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp)
         self.backtest_end_timestamp = timestamp
 
     def get_timestamps(self) -> list[datetime]:
@@ -146,10 +208,11 @@ class AlphaFlow:
     def run(self, is_backtest: bool = True):
         if is_backtest:
             events: list[MarketDataEvent] = []
-            for data_feed in self.data_feeds:
+            for symbol in self.universe:
                 events.extend(
                     list(
-                        data_feed.run(
+                        self.data_feed.run(
+                            symbol,
                             self.data_start_timestamp or self.backtest_start_timestamp,
                             self.backtest_end_timestamp,
                         )
@@ -160,6 +223,9 @@ class AlphaFlow:
                 self._data[event.symbol].append(event)
             for event in events:
                 self.event_bus.publish(Topic.MARKET_DATA, event)
+            for analyzer in self.analyzers:
+                logger.info("Running analyzer %s", analyzer)
+                analyzer.run()
         else:
             raise NotImplementedError
 

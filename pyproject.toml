@@ -30,6 +30,8 @@ classifiers = [
 ]
 dependencies = [
     "pandas>=2.2.3",
+    "requests>=2.32.3",
+    "seaborn>=0.13.2",
 ]
 
 [project.urls]

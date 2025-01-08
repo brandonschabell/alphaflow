@@ -11,8 +11,16 @@ logger = logging.getLogger(__name__)
 class SimpleBroker(Broker):
     """A simple broker that executes orders.
 
-    Note: This broker does not allow for short selling or margin trading.
+    Note: This broker does not allow for short selling.
     """
+
+    def __init__(self, margin: float = 2.0) -> None:
+        """Initializes the broker.
+
+        Args:
+            margin: The allowed margin for trading. If the margin is 1.0, then the broker does not allow for margin trading.
+        """
+        self.margin = margin
 
     def read_event(self, event: OrderEvent) -> None:
         """Reads the event."""
@@ -29,11 +37,15 @@ class SimpleBroker(Broker):
         return self._alpha_flow.get_price(symbol, timestamp)
 
     def _can_execute_order(self, event: OrderEvent) -> bool:
-        cash = self._get_cash()
         price = self._get_price(event.symbol, event.timestamp)
 
         if event.side is Side.BUY:
-            return cash >= event.qty * price
+            return (
+                self._alpha_flow.portfolio.get_buying_power(
+                    self.margin, event.timestamp
+                )
+                >= event.qty * price
+            )
         else:
             return self._alpha_flow.portfolio.get_position(event.symbol) >= event.qty
 

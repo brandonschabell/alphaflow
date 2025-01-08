@@ -7,17 +7,6 @@ from alphaflow.events.event import Event
 
 
 @dataclass(frozen=True)
-class BarTimeWindow:
-    """Represents a time window for a bar."""
-
-    #: The start timestamp of the time window.
-    start_timestamp: datetime
-
-    #: The end timestamp of the time window.
-    end_timestamp: datetime
-
-
-@dataclass(frozen=True)
 class MarketDataEvent(Event):
     """Represents a market data event."""
 
@@ -26,9 +15,6 @@ class MarketDataEvent(Event):
 
     #: The symbol of the market data.
     symbol: str
-
-    #: The time window of the bar.
-    bar_time_window: BarTimeWindow
 
     #: The open price of the bar.
     open: float
