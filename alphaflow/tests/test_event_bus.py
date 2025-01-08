@@ -3,7 +3,7 @@ from alphaflow.enums import Topic
 from alphaflow.event_bus.event_bus import EventBus
 from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
-from alphaflow.events.market_data_event import BarTimeWindow, MarketDataEvent
+from alphaflow.events.market_data_event import MarketDataEvent
 
 
 def test_subscribe_unsubscribe_publish():
@@ -22,9 +22,6 @@ def test_subscribe_unsubscribe_publish():
     event = MarketDataEvent(
         timestamp=datetime.now(),
         symbol="AAPL",
-        bar_time_window=BarTimeWindow(
-            start_timestamp=datetime.now(), end_timestamp=datetime.now()
-        ),
         open=1.0,
         high=1.0,
         low=1.0,
