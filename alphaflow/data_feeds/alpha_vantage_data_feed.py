@@ -11,14 +11,14 @@ from alphaflow.events.market_data_event import MarketDataEvent
 logger = logging.getLogger(__name__)
 
 
-class FMPDataFeed(DataFeed):
+class AlphaVantageFeed(DataFeed):
     def __init__(
         self,
         use_cache: bool = False,
         api_key: str | None = None,
     ) -> None:
         self._use_cache = use_cache
-        self.__api_key = api_key or os.getenv("FMP_API_KEY")
+        self.__api_key = api_key or os.getenv("ALPHA_VANTAGE_API_KEY")
 
     def run(
         self,
@@ -29,24 +29,24 @@ class FMPDataFeed(DataFeed):
         if self._use_cache:
             raise NotImplementedError("Cache not implemented yet")
         else:
-            url = f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={self.__api_key}"
-            if start_timestamp:
-                url += f"&from={start_timestamp.date()}"
-            if end_timestamp:
-                url += f"&to={end_timestamp.date()}"
+            url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={self.__api_key}&outputsize=full"
             logger.debug(f"Fetching data from {url}")
             response = requests.get(url)
             if response.status_code != 200:
                 raise ValueError(f"Failed to fetch data: {response.text}")
             data = response.json()
-            for row in data["historical"]:
+            for date, datum in data["Time Series (Daily)"].items():
                 event = MarketDataEvent(
-                    timestamp=datetime.strptime(row["date"], "%Y-%m-%d"),
+                    timestamp=datetime.strptime(date, "%Y-%m-%d"),
                     symbol=symbol,
-                    open=row["open"],
-                    high=row["high"],
-                    low=row["low"],
-                    close=row["adjClose"],
-                    volume=row["volume"],
+                    open=float(datum["1. open"]),
+                    high=float(datum["2. high"]),
+                    low=float(datum["3. low"]),
+                    close=float(datum["5. adjusted close"]),
+                    volume=float(datum["6. volume"]),
                 )
+                if start_timestamp is not None and event.timestamp < start_timestamp:
+                    continue
+                if end_timestamp is not None and event.timestamp > end_timestamp:
+                    continue
                 yield event

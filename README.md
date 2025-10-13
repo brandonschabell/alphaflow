@@ -2,7 +2,7 @@
 
 **AlphaFlow** is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development. By focusing on realism (partial fills, slippage, custom commissions) and a robust pub-sub architecture, AlphaFlow aims to provide a flexible, high-performance environment for quantitative analysts and algorithmic traders. 
 
-> **Vision**: Combine Pythonic ease of use with modern software engineering principles and optional Rust-based optimizations to handle large-scale data and complex trading logic—without sacrificing maintainability.
+> **Vision**: Offer a "batteries included" backtesting experience leveraging the simplicity of Python, while also enabling unlimited customization and optimization using an event-driven architecture that can support components written in any language.
 
 ---
 
@@ -18,9 +18,8 @@
    - [Portfolio](#5-portfolio)  
    - [Analytics](#6-analytics)  
 4. [Getting Started](#getting-started)  
-5. [Roadmap](#roadmap)  
-6. [Contributing](#contributing)  
-7. [License](#license)
+5. [Contributing](#contributing)  
+6. [License](#license)
 
 ---
 
@@ -38,11 +37,12 @@
   Initially focused on **stocks & ETFs** with daily or intraday data, but built to extend to futures, forex, cryptocurrencies, and **options** in future releases.
 
 - **Performance-Oriented**  
-  Planned **Rust** integration for speed-critical components (like indicator calculations on large datasets).
+  Planned message queue integration which will enable optimization of speed-critical components (like indicator calculations on large datasets).
 
 - **Extendable & Modular**  
   - Swap out data sources (CSV, APIs, real-time feeds).  
-  - Plugin-style architecture for custom brokers, strategies, analytics, and risk management.  
+  - Plugin-style architecture for custom brokers, strategies, analytics, and risk management.
+  - Components are planned to be made language agnostic in a future release (v1).
   - A solid foundation for **live trading** integration in a future version (v1).
 
 - **Professional-Grade Analytics**  
@@ -164,35 +164,6 @@
 3. **Monitor Results**  
    - Use built-in **analytics** or your own custom module to generate metrics and charts.  
    - Check logs to see partial fills, order details, and event flows.
-
----
-
-## Roadmap
-
-- **v0.1 (MVP)**  
-  - Basic event-driven backtest engine with daily/intraday data.  
-  - Core modules (DataFeed, Strategy, Broker, Portfolio, Analytics).  
-
-- **v0.2**  
-  - Slippage & commission models.
-
-- **v0.3**  
-  - Add advanced features: multiple timeframes, earnings/news events.  
-
-- **v0.4**
-  - Additional analytics & risk management tools.
-
-- **v0.5**
-  - **Live Trading** integration with a real-time broker plugin.
-
-- **v1.0**
-  - Performance optimization and bug fixes.
-
-- **v1.x**
-  - Support for additional asset classes (futures, forex, crypto, options).
-
-- **v2.0**  
-  - **Rust** acceleration for computationally heavy tasks (indicators, large datasets).  
 
 ---
 

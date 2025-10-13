@@ -18,6 +18,7 @@ class DefaultAnalyzer(Analyzer):
         self._plot_path = plot_path
         self._values: dict[datetime, float] = {}
         self._plot_title = plot_title
+        self._fills: dict[datetime, FillEvent] = dict()
 
     def topic_subscriptions(self):
         return [Topic.FILL, Topic.MARKET_DATA]
@@ -26,6 +27,8 @@ class DefaultAnalyzer(Analyzer):
         self._values[event.timestamp] = self._alpha_flow.portfolio.get_portfolio_value(
             event.timestamp
         )
+        if isinstance(event, FillEvent):
+            self._fills[event.timestamp] = event
 
     def run(self):
         timestamps, portfolio_values = zip(*self._values.items())

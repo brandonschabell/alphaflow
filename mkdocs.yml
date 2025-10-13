@@ -1,0 +1,17 @@
+site_name: AlphaFlow
+site_url: https://brandonschabell.com/alphaflow
+repo_url: https://github.com/brandonschabell/alphaflow
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: blue
+  features:
+    - toc.follow
+    - toc.integrate
+    - navigation.top
+nav:
+  - Basics: index.md
+  - Installation: installation.md
+  - Getting Started: getting_started.md
+  - Roadmap: roadmap.md
