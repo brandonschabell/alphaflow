@@ -6,6 +6,7 @@ import math
 from alphaflow import Strategy
 from alphaflow.enums import OrderType, Side, Topic
 from alphaflow.events import MarketDataEvent, OrderEvent
+from alphaflow.events.event import Event
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class BuyAndHoldStrategy(Strategy):
         self.min_share_delta = min_share_delta
         self.share_quantization = share_quantization
 
-    def topic_subscriptions(self):
+    def topic_subscriptions(self) -> list[Topic]:
         """Return the topics this strategy subscribes to.
 
         Returns:
@@ -50,13 +51,17 @@ class BuyAndHoldStrategy(Strategy):
         """
         return [Topic.MARKET_DATA]
 
-    def read_event(self, event: MarketDataEvent):
+    def read_event(self, event: Event) -> None:
         """Process market data events and generate rebalancing orders.
 
         Args:
             event: The market data event containing price information.
 
         """
+        # Type narrowing - we only get MarketDataEvent from Topic.MARKET_DATA
+        if not isinstance(event, MarketDataEvent):
+            return
+
         if event.symbol != self.symbol:
             return
         if self._alpha_flow.backtest_start_timestamp and event.timestamp < self._alpha_flow.backtest_start_timestamp:

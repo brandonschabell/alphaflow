@@ -11,7 +11,7 @@ from alphaflow.data_feeds import CSVDataFeed
 from alphaflow.strategies import BuyAndHoldStrategy
 
 
-def test_simple_backtest():
+def test_simple_backtest() -> None:
     """Test a simple buy-and-hold backtest with AAPL."""
     logging.basicConfig(level=logging.DEBUG)
 

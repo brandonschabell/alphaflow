@@ -6,6 +6,7 @@ from datetime import datetime
 from alphaflow import Broker
 from alphaflow.enums import Side, Topic
 from alphaflow.events import FillEvent, OrderEvent
+from alphaflow.events.event import Event
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +26,12 @@ class SimpleBroker(Broker):
         """
         self.margin = margin
 
-    def read_event(self, event: OrderEvent) -> None:
+    def read_event(self, event: Event) -> None:
         """Read and process the event."""
+        # Type narrowing - we only get OrderEvent from Topic.ORDER
+        if not isinstance(event, OrderEvent):
+            return
+
         if self._can_execute_order(event):
             fill_event = self._execute_order(event)
             self._alpha_flow.event_bus.publish(Topic.FILL, fill_event)
