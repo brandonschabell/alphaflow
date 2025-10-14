@@ -57,10 +57,13 @@ class FMPDataFeed(DataFeed):
             if end_timestamp:
                 url += f"&to={end_timestamp.date()}"
             logger.debug(f"Fetching data from {url}")
-            response = httpx.get(url)
-            if response.status_code != 200:
-                raise ValueError(f"Failed to fetch data: {response.text}")
-            data = response.json()
+            try:
+                response = httpx.get(url, timeout=httpx.Timeout(30.0))
+                response.raise_for_status()
+                data = response.json()
+            except httpx.HTTPError as e:
+                logger.error(f"HTTP error while fetching data from FMP: {e}")
+                raise ValueError(f"Failed to fetch data from FMP: {e}") from e
             for row in data["historical"]:
                 event = MarketDataEvent(
                     timestamp=datetime.strptime(row["date"], "%Y-%m-%d"),
