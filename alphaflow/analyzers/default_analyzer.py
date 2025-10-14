@@ -184,7 +184,7 @@ class DefaultAnalyzer(Analyzer):
         returns = [portfolio_values[i] / portfolio_values[i - 1] - 1 for i in range(1, len(portfolio_values))]
         mean_return = sum(returns) / len(returns)
 
-        if mean_return == 0:
+        if abs(mean_return) < 1e-10:
             return 0.0
 
         # Downside deviation: only penalize returns below zero (target return = 0)
