@@ -29,9 +29,9 @@ classifiers = [
     'Topic :: Software Development',
 ]
 dependencies = [
-    "httpx",
-    "pandas",
-    "seaborn",
+    "httpx>=0.28.1",
+    "pandas>=2.2.3",
+    "seaborn>=0.13.2",
 ]
 
 [project.urls]
@@ -43,6 +43,28 @@ Changelog = "https://github.com/brandonschabell/alphaflow/releases"
 [tool.hatch.build.targets.wheel]
 packages = [
   "alphaflow",
+]
+exclude = [
+  "alphaflow/tests",
+  "alphaflow/examples",
+]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+  "/site",
+  "*.md",
+  ".gitignore",
+  ".readthedocs.yaml",
+  "mkdocs.yml",
+]
+include = [
+  "/alphaflow",
+  "README.md",
+  "LICENSE",
+  "CHANGELOG.md",
+  "pyproject.toml",
 ]
 
 [tool.pytest.ini_options]

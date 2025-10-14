@@ -53,10 +53,12 @@ class AlphaVantageFeed(DataFeed):
         else:
             url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={self.__api_key}&outputsize=full"
             logger.debug(f"Fetching data for symbol '{symbol}' from Alpha Vantage endpoint.")
-            response = httpx.get(url)
-            if response.status_code != 200:
-                raise ValueError(f"Failed to fetch data: {response.text}")
-            data = response.json()
+            try:
+                response = httpx.get(url, timeout=httpx.Timeout(30.0))
+                response.raise_for_status()
+                data = response.json()
+            except httpx.HTTPError as e:
+                raise ValueError(f"Failed to fetch data: {e}") from e
             for date, datum in data["Time Series (Daily)"].items():
                 event = MarketDataEvent(
                     timestamp=datetime.strptime(date, "%Y-%m-%d"),
