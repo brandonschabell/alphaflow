@@ -9,7 +9,7 @@ from alphaflow.events.event import Event
 from alphaflow.events.market_data_event import MarketDataEvent
 
 
-def test_subscribe_unsubscribe_publish():
+def test_subscribe_unsubscribe_publish() -> None:
     """Test event bus subscription, publishing, and unsubscription."""
 
     class _TestSubscriber(Subscriber):

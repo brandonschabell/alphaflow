@@ -8,7 +8,8 @@ import seaborn as sns
 
 from alphaflow import Analyzer
 from alphaflow.enums import Topic
-from alphaflow.events import FillEvent, MarketDataEvent
+from alphaflow.events import FillEvent
+from alphaflow.events.event import Event
 
 
 class DefaultAnalyzer(Analyzer):
@@ -35,7 +36,7 @@ class DefaultAnalyzer(Analyzer):
         self._plot_title = plot_title
         self._fills: dict[datetime, FillEvent] = {}
 
-    def topic_subscriptions(self):
+    def topic_subscriptions(self) -> list[Topic]:
         """Return the topics this analyzer subscribes to.
 
         Returns:
@@ -44,7 +45,7 @@ class DefaultAnalyzer(Analyzer):
         """
         return [Topic.FILL, Topic.MARKET_DATA]
 
-    def read_event(self, event: FillEvent | MarketDataEvent):
+    def read_event(self, event: Event) -> None:
         """Process events and record portfolio values.
 
         Args:
@@ -55,14 +56,16 @@ class DefaultAnalyzer(Analyzer):
         if isinstance(event, FillEvent):
             self._fills[event.timestamp] = event
 
-    def run(self):
+    def run(self) -> None:
         """Run the analysis after backtest completion.
 
         Computes all performance metrics, prints them to console, and generates
         a visualization plot if plot_path was specified.
 
         """
-        timestamps, portfolio_values = zip(*self._values.items(), strict=False)
+        timestamps_tuple, portfolio_values_tuple = zip(*self._values.items(), strict=False)
+        timestamps = list(timestamps_tuple)
+        portfolio_values = list(portfolio_values_tuple)
 
         for metric, value in self.calculate_all_metrics(timestamps, portfolio_values).items():
             print(f"{metric}: {value}")
@@ -80,9 +83,11 @@ class DefaultAnalyzer(Analyzer):
             f"Anualized Return: {100 * self.calculate_anualized_return(timestamps, portfolio_values):.2f}%"
         )
 
-        benchmark_values = self._alpha_flow.portfolio.get_benchmark_values()
-        if benchmark_values:
-            benchmark_timestamps, benchmark_values = zip(*benchmark_values.items(), strict=False)
+        benchmark_values_dict = self._alpha_flow.portfolio.get_benchmark_values()
+        if benchmark_values_dict:
+            benchmark_timestamps_tuple, benchmark_values_tuple = zip(*benchmark_values_dict.items(), strict=False)
+            benchmark_timestamps = list(benchmark_timestamps_tuple)
+            benchmark_values = list(benchmark_values_tuple)
             benchmark_multiple = portfolio_values[0] / benchmark_values[0]
             benchmark_values = [value * benchmark_multiple for value in benchmark_values]
             sns.lineplot(
@@ -128,8 +133,8 @@ class DefaultAnalyzer(Analyzer):
             Maximum drawdown as a decimal (e.g., 0.15 for 15% drawdown).
 
         """
-        max_drawdown = 0
-        peak = portfolio_values[0]
+        max_drawdown: float = 0.0
+        peak: float = portfolio_values[0]
         for value in portfolio_values:
             if value > peak:
                 peak = value
@@ -154,8 +159,8 @@ class DefaultAnalyzer(Analyzer):
         std_return = (sum((ret - mean_return) ** 2 for ret in returns) / len(returns)) ** 0.5
         values_per_year = len(portfolio_values) / (timestamps[-1] - timestamps[0]).days * 365
         if std_return == 0:
-            return 0
-        return mean_return * values_per_year**0.5 / std_return
+            return 0.0
+        return float(mean_return * values_per_year**0.5 / std_return)
 
     def calculate_sortino_ratio(self, timestamps: list[datetime], portfolio_values: list[float]) -> float:
         """Calculate the Sortino ratio for the portfolio.
@@ -176,8 +181,8 @@ class DefaultAnalyzer(Analyzer):
         downside_deviation = (sum((ret - mean_return) ** 2 for ret in downside_returns) / len(downside_returns)) ** 0.5
         values_per_year = len(portfolio_values) / (timestamps[-1] - timestamps[0]).days * 365
         if downside_deviation == 0:
-            return 0
-        return mean_return * values_per_year**0.5 / downside_deviation
+            return 0.0
+        return float(mean_return * values_per_year**0.5 / downside_deviation)
 
     def calculate_anualized_return(self, timestamps: list[datetime], portfolio_values: list[float]) -> float:
         """Calculate the annualized return.
@@ -190,7 +195,7 @@ class DefaultAnalyzer(Analyzer):
             Annualized return as a decimal (e.g., 0.10 for 10% annual return).
 
         """
-        return (portfolio_values[-1] / portfolio_values[0]) ** (365 / (timestamps[-1] - timestamps[0]).days) - 1
+        return float((portfolio_values[-1] / portfolio_values[0]) ** (365 / (timestamps[-1] - timestamps[0]).days) - 1)
 
     def calculate_total_return(self, portfolio_values: list[float]) -> float:
         """Calculate the total return over the entire period.

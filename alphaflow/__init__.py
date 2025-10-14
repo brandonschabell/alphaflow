@@ -11,6 +11,7 @@ from alphaflow.enums import Topic
 from alphaflow.event_bus.event_bus import EventBus
 from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
+from alphaflow.events.fill_event import FillEvent
 from alphaflow.events.market_data_event import MarketDataEvent
 
 logger = logging.getLogger(__name__)
@@ -95,14 +96,14 @@ class Portfolio(Subscriber):
 
         """
         self._alpha_flow = alpha_flow
-        self._cash = 0
-        self.positions = {}
+        self._cash: float = 0.0
+        self.positions: dict[str, float] = {}
 
     def topic_subscriptions(self) -> list[Topic]:
         """Return the topics to subscribe to."""
         return [Topic.FILL]
 
-    def set_cash(self, cash: float):
+    def set_cash(self, cash: float) -> None:
         """Set the cash balance.
 
         Args:
@@ -130,7 +131,7 @@ class Portfolio(Subscriber):
             The number of shares held (0 if no position).
 
         """
-        return self.positions.get(symbol, 0)
+        return self.positions.get(symbol, 0.0)
 
     def update_cash(self, amount: float) -> None:
         """Update the cash balance by adding an amount.
@@ -217,6 +218,9 @@ class Portfolio(Subscriber):
 
     def read_event(self, event: Event) -> None:
         """Read and process the event."""
+        if not isinstance(event, FillEvent):
+            return
+
         cost = event.fill_price * event.fill_qty  # Can be positive or negative
         self.update_cash(-cost)
         self.update_position(event.symbol, event.fill_qty)
@@ -246,7 +250,7 @@ class Strategy(Subscriber):
 class AlphaFlow:
     """Event-driven backtesting engine for trading strategies."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the AlphaFlow backtest engine."""
         self.event_bus = EventBus()
         self.portfolio = Portfolio(self)
@@ -263,7 +267,7 @@ class AlphaFlow:
         for topic in self.portfolio.topic_subscriptions():
             self.event_bus.subscribe(topic, self.portfolio)
 
-    def set_benchmark(self, symbol: str):
+    def set_benchmark(self, symbol: str) -> None:
         """Set the benchmark symbol for performance comparison.
 
         Args:
@@ -273,7 +277,7 @@ class AlphaFlow:
         self.universe.add(symbol)
         self.benchmark = symbol
 
-    def add_equity(self, symbol: str):
+    def add_equity(self, symbol: str) -> None:
         """Add an equity symbol to the trading universe.
 
         Args:
@@ -282,7 +286,7 @@ class AlphaFlow:
         """
         self.universe.add(symbol)
 
-    def set_data_feed(self, data_feed: DataFeed):
+    def set_data_feed(self, data_feed: DataFeed) -> None:
         """Set the data feed for retrieving market data.
 
         Args:
@@ -292,7 +296,7 @@ class AlphaFlow:
         data_feed.set_alpha_flow(self)
         self.data_feed = data_feed
 
-    def add_strategy(self, strategy: Strategy):
+    def add_strategy(self, strategy: Strategy) -> None:
         """Add a trading strategy to the backtest.
 
         Args:
@@ -304,7 +308,7 @@ class AlphaFlow:
             self.event_bus.subscribe(topic, strategy)
         self.strategies.append(strategy)
 
-    def add_analyzer(self, analyzer: Analyzer):
+    def add_analyzer(self, analyzer: Analyzer) -> None:
         """Add an analyzer for performance metrics and visualization.
 
         Args:
@@ -316,7 +320,7 @@ class AlphaFlow:
             self.event_bus.subscribe(topic, analyzer)
         self.analyzers.append(analyzer)
 
-    def set_broker(self, broker: Broker):
+    def set_broker(self, broker: Broker) -> None:
         """Set the broker for order execution simulation.
 
         Args:
@@ -328,7 +332,7 @@ class AlphaFlow:
             self.event_bus.subscribe(topic, broker)
         self.broker = broker
 
-    def set_cash(self, cash: float):
+    def set_cash(self, cash: float) -> None:
         """Set the initial cash balance for the portfolio.
 
         Args:
@@ -337,7 +341,7 @@ class AlphaFlow:
         """
         self.portfolio.set_cash(cash)
 
-    def set_data_start_timestamp(self, timestamp: datetime | str):
+    def set_data_start_timestamp(self, timestamp: datetime | str) -> None:
         """Set the start timestamp for loading data.
 
         Args:
@@ -348,7 +352,7 @@ class AlphaFlow:
             timestamp = datetime.fromisoformat(timestamp)
         self.data_start_timestamp = timestamp
 
-    def set_backtest_start_timestamp(self, timestamp: datetime | str):
+    def set_backtest_start_timestamp(self, timestamp: datetime | str) -> None:
         """Set the start timestamp for the backtest period.
 
         Args:
@@ -359,7 +363,7 @@ class AlphaFlow:
             timestamp = datetime.fromisoformat(timestamp)
         self.backtest_start_timestamp = timestamp
 
-    def set_backtest_end_timestamp(self, timestamp: datetime | str):
+    def set_backtest_end_timestamp(self, timestamp: datetime | str) -> None:
         """Set the end timestamp for the backtest period.
 
         Args:
@@ -377,12 +381,12 @@ class AlphaFlow:
             Sorted list of datetime objects representing all data points in the backtest.
 
         """
-        timestamps = set()
+        timestamps: set[datetime] = set()
         for events in self._data.values():
             timestamps.update(event.timestamp for event in events)
         return sorted(timestamps)
 
-    def run(self, is_backtest: bool = True):
+    def run(self, is_backtest: bool = True) -> None:
         """Run the backtest simulation.
 
         Load all market data for symbols in the universe, publishes events chronologically
@@ -396,6 +400,9 @@ class AlphaFlow:
 
         """
         if is_backtest:
+            if self.data_feed is None:
+                raise ValueError("Data feed must be set before running backtest")
+
             events: list[MarketDataEvent] = []
             for symbol in self.universe:
                 events.extend(

@@ -18,7 +18,7 @@ class CSVDataFeed(DataFeed):
 
     def __init__(
         self,
-        file_path: Path,
+        file_path: Path | str,
         *,
         col_timestamp: str = "Date",
         col_symbol: str = "Symbol",
@@ -41,7 +41,7 @@ class CSVDataFeed(DataFeed):
             col_volume: Name of the volume column.
 
         """
-        self.file_path = file_path
+        self.file_path = Path(file_path) if isinstance(file_path, str) else file_path
         self._col_timestamp = col_timestamp
         self._col_symbol = col_symbol
         self._col_open = col_open
