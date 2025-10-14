@@ -5,7 +5,7 @@ import os
 from collections.abc import Generator
 from datetime import datetime
 
-import requests
+import httpx
 
 from alphaflow import DataFeed
 from alphaflow.events.market_data_event import MarketDataEvent
@@ -57,7 +57,7 @@ class FMPDataFeed(DataFeed):
             if end_timestamp:
                 url += f"&to={end_timestamp.date()}"
             logger.debug(f"Fetching data from {url}")
-            response = requests.get(url)
+            response = httpx.get(url)
             if response.status_code != 200:
                 raise ValueError(f"Failed to fetch data: {response.text}")
             data = response.json()

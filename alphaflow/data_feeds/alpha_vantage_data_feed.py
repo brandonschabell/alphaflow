@@ -5,7 +5,7 @@ import os
 from collections.abc import Generator
 from datetime import datetime
 
-import requests
+import httpx
 
 from alphaflow import DataFeed
 from alphaflow.events.market_data_event import MarketDataEvent
@@ -53,7 +53,7 @@ class AlphaVantageFeed(DataFeed):
         else:
             url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={self.__api_key}&outputsize=full"
             logger.debug(f"Fetching data from {url}")
-            response = requests.get(url)
+            response = httpx.get(url)
             if response.status_code != 200:
                 raise ValueError(f"Failed to fetch data: {response.text}")
             data = response.json()
