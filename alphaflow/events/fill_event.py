@@ -1,5 +1,7 @@
 """Fill event representing an executed trade."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime
 
