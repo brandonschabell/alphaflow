@@ -1,5 +1,10 @@
 # AlphaFlow
 
+[![CI](https://github.com/brandonschabell/alphaflow/actions/workflows/ci.yml/badge.svg)](https://github.com/brandonschabell/alphaflow/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/brandonschabell/alphaflow/branch/main/graph/badge.svg)](https://codecov.io/gh/brandonschabell/alphaflow)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **AlphaFlow** is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development. By focusing on realism (partial fills, slippage, custom commissions) and a robust pub-sub architecture, AlphaFlow aims to provide a flexible, high-performance environment for quantitative analysts and algorithmic traders. 
 
 > **Vision**: Offer a "batteries included" backtesting experience leveraging the simplicity of Python, while also enabling unlimited customization and optimization using an event-driven architecture that can support components written in any language.
