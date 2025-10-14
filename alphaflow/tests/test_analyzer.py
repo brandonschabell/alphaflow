@@ -151,6 +151,17 @@ def test_analyzer_calculate_sharpe_ratio_zero_std() -> None:
     assert sharpe == 0.0
 
 
+def test_analyzer_calculate_sharpe_ratio_single_value() -> None:
+    """Test Sharpe ratio with only one value returns 0."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [datetime(2020, 1, 1)]
+    portfolio_values = [100.0]
+
+    sharpe = analyzer.calculate_sharpe_ratio(timestamps, portfolio_values)
+    assert sharpe == 0.0
+
+
 def test_analyzer_calculate_sortino_ratio() -> None:
     """Test Sortino ratio calculation."""
     analyzer = DefaultAnalyzer()
@@ -171,12 +182,59 @@ def test_analyzer_calculate_sortino_ratio() -> None:
     assert sortino > 0
 
 
+def test_analyzer_calculate_sortino_ratio_with_losses() -> None:
+    """Test Sortino ratio correctly handles mixed returns."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [
+        datetime(2020, 1, 1),
+        datetime(2020, 1, 2),
+        datetime(2020, 1, 3),
+        datetime(2020, 1, 4),
+    ]
+    # Returns: +5%, -2%, +3%
+    portfolio_values = [100.0, 105.0, 102.9, 106.0]
+
+    sortino = analyzer.calculate_sortino_ratio(timestamps, portfolio_values)
+
+    # Should return a positive number
+    assert isinstance(sortino, float)
+    assert sortino > 0
+
+    # Sortino focuses on downside deviation
+    sharpe = analyzer.calculate_sharpe_ratio(timestamps, portfolio_values)
+    assert isinstance(sharpe, float)
+    assert sharpe > 0
+
+
 def test_analyzer_calculate_sortino_ratio_zero_downside() -> None:
-    """Test Sortino ratio with zero downside deviation."""
+    """Test Sortino ratio with zero downside deviation, but only 0 returns."""
     analyzer = DefaultAnalyzer()
 
     timestamps = [datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3)]
     portfolio_values = [100.0, 100.0, 100.0]
+
+    sortino = analyzer.calculate_sortino_ratio(timestamps, portfolio_values)
+    assert sortino == 0
+
+
+def test_analyzer_calculate_sortino_ratio_only_positive_returns() -> None:
+    """Test Sortino ratio with only positive returns returns infinity."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3)]
+    portfolio_values = [100.0, 105.0, 110.0]  # Only gains
+
+    sortino = analyzer.calculate_sortino_ratio(timestamps, portfolio_values)
+    assert sortino == float("inf")  # No downside risk
+
+
+def test_analyzer_calculate_sortino_ratio_single_value() -> None:
+    """Test Sortino ratio with only one value returns 0."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [datetime(2020, 1, 1)]
+    portfolio_values = [100.0]
 
     sortino = analyzer.calculate_sortino_ratio(timestamps, portfolio_values)
     assert sortino == 0.0
@@ -194,6 +252,17 @@ def test_analyzer_calculate_annualized_return() -> None:
     # Should be approximately 10%
     assert annualized > 0.09
     assert annualized < 0.11
+
+
+def test_analyzer_calculate_annualized_return_same_day() -> None:
+    """Test annualized return with same day (zero days) returns 0."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [datetime(2020, 1, 1), datetime(2020, 1, 1)]  # Same day
+    portfolio_values = [100.0, 110.0]
+
+    annualized = analyzer.calculate_annualized_return(timestamps, portfolio_values)
+    assert annualized == 0.0
 
 
 def test_analyzer_calculate_total_return() -> None:

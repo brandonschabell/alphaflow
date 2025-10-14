@@ -198,9 +198,41 @@ def test_portfolio_read_event_with_fill() -> None:
     # Process the event
     portfolio.read_event(fill_event)
 
-    # Cash should be reduced by fill_price * fill_qty
-    assert portfolio.get_cash() == pytest.approx(8500.0, abs=0.01)
+    # Cash should be reduced by (fill_price * fill_qty) + commission
+    # Cost: 150.0 * 10.0 = 1500.0
+    # Commission: 5.0
+    # Total: 1505.0
+    # Remaining: 10000 - 1505 = 8495.0
+    assert portfolio.get_cash() == pytest.approx(8495.0, abs=0.01)
     assert portfolio.get_position("AAPL") == 10.0
+
+
+def test_portfolio_read_event_with_sell_and_commission() -> None:
+    """Test portfolio correctly handles sell orders with commission."""
+    af = AlphaFlow()
+    af.set_cash(10000)
+    portfolio = af.portfolio
+    portfolio.update_position("AAPL", 20.0)  # Start with 20 shares
+
+    # Create a sell fill event
+    fill_event = FillEvent(
+        timestamp=datetime.now(),
+        symbol="AAPL",
+        fill_price=150.0,
+        fill_qty=-10.0,  # Negative for sell
+        commission=5.0,
+    )
+
+    # Process the event
+    portfolio.read_event(fill_event)
+
+    # Cash should increase by (150.0 * 10.0) - commission
+    # Revenue: 1500.0
+    # Commission: 5.0
+    # Net: 1495.0
+    # Total: 10000 + 1495 = 11495.0
+    assert portfolio.get_cash() == pytest.approx(11495.0, abs=0.01)
+    assert portfolio.get_position("AAPL") == 10.0  # 20 - 10
 
 
 def test_portfolio_read_event_with_non_fill() -> None:
