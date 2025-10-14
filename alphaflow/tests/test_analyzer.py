@@ -208,7 +208,7 @@ def test_analyzer_calculate_sortino_ratio_with_losses() -> None:
 
 
 def test_analyzer_calculate_sortino_ratio_zero_downside() -> None:
-    """Test Sortino ratio with zero downside deviation, but only 0 returns."""
+    """Test Sortino ratio with zero returns (constant portfolio values)."""
     analyzer = DefaultAnalyzer()
 
     timestamps = [datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3)]
