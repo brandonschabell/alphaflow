@@ -10,6 +10,16 @@ wheels/
 # Virtual environments
 .venv
 
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Type checking and linting
+.mypy_cache/
+.ruff_cache/
+
 # IDE files
 .idea/
 .vscode/
