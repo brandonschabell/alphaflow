@@ -56,7 +56,7 @@ class FMPDataFeed(DataFeed):
                 url += f"&from={start_timestamp.date()}"
             if end_timestamp:
                 url += f"&to={end_timestamp.date()}"
-            logger.debug(f"Fetching data from {url}")
+            logger.debug(f"Fetching data for symbol '{symbol}' from FMP historical-price-full endpoint")
             try:
                 response = httpx.get(url, timeout=httpx.Timeout(30.0))
                 response.raise_for_status()
