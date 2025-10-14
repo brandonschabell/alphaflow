@@ -1,3 +1,5 @@
+"""Fill event representing an executed trade."""
+
 from dataclasses import dataclass
 from datetime import datetime
 

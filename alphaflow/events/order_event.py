@@ -1,3 +1,5 @@
+"""Order event representing a trading order."""
+
 from dataclasses import dataclass
 from datetime import datetime
 

@@ -1,4 +1,7 @@
+"""Tests for the event bus publish-subscribe system."""
+
 from datetime import datetime
+
 from alphaflow.enums import Topic
 from alphaflow.event_bus.event_bus import EventBus
 from alphaflow.event_bus.subscriber import Subscriber
@@ -7,6 +10,8 @@ from alphaflow.events.market_data_event import MarketDataEvent
 
 
 def test_subscribe_unsubscribe_publish():
+    """Test event bus subscription, publishing, and unsubscription."""
+
     class _TestSubscriber(Subscriber):
         def __init__(self) -> None:
             self.read_event_called = False

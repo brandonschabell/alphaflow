@@ -1,7 +1,9 @@
-from collections.abc import Generator
-from datetime import datetime
+"""Alpha Vantage API data feed implementation."""
+
 import logging
 import os
+from collections.abc import Generator
+from datetime import datetime
 
 import requests
 
@@ -12,11 +14,20 @@ logger = logging.getLogger(__name__)
 
 
 class AlphaVantageFeed(DataFeed):
+    """Data feed that loads market data from Alpha Vantage API."""
+
     def __init__(
         self,
         use_cache: bool = False,
         api_key: str | None = None,
     ) -> None:
+        """Initialize the Alpha Vantage data feed.
+
+        Args:
+            use_cache: Whether to cache API responses (not yet implemented).
+            api_key: Alpha Vantage API key. Falls back to ALPHA_VANTAGE_API_KEY env var.
+
+        """
         self._use_cache = use_cache
         self.__api_key = api_key or os.getenv("ALPHA_VANTAGE_API_KEY")
 
@@ -26,6 +37,17 @@ class AlphaVantageFeed(DataFeed):
         start_timestamp: datetime | None,
         end_timestamp: datetime | None,
     ) -> Generator[MarketDataEvent, None, None]:
+        """Load and yield market data events from Alpha Vantage API.
+
+        Args:
+            symbol: The ticker symbol to load data for.
+            start_timestamp: Optional start time for filtering data.
+            end_timestamp: Optional end time for filtering data.
+
+        Yields:
+            MarketDataEvent objects containing OHLCV data.
+
+        """
         if self._use_cache:
             raise NotImplementedError("Cache not implemented yet")
         else:

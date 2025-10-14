@@ -1,3 +1,5 @@
+"""Market data event representing a price bar."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -32,4 +34,13 @@ class MarketDataEvent(Event):
     volume: float
 
     def __gt__(self, other: MarketDataEvent) -> bool:
+        """Compare events by timestamp for sorting.
+
+        Args:
+            other: Another MarketDataEvent to compare against.
+
+        Returns:
+            True if this event's timestamp is greater than the other's.
+
+        """
         return self.timestamp > other.timestamp

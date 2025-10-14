@@ -1,3 +1,5 @@
+"""Enumeration types for the AlphaFlow framework."""
+
 from enum import Enum, auto
 
 

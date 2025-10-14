@@ -1,5 +1,7 @@
-from datetime import datetime
+"""Simple broker implementation with margin support."""
+
 import logging
+from datetime import datetime
 
 from alphaflow import Broker
 from alphaflow.enums import Side, Topic
@@ -15,15 +17,16 @@ class SimpleBroker(Broker):
     """
 
     def __init__(self, margin: float = 2.0) -> None:
-        """Initializes the broker.
+        """Initialize the broker.
 
         Args:
             margin: The allowed margin for trading. If the margin is 1.0, then the broker does not allow for margin trading.
+
         """
         self.margin = margin
 
     def read_event(self, event: OrderEvent) -> None:
-        """Reads the event."""
+        """Read and process the event."""
         if self._can_execute_order(event):
             fill_event = self._execute_order(event)
             self._alpha_flow.event_bus.publish(Topic.FILL, fill_event)
@@ -40,12 +43,7 @@ class SimpleBroker(Broker):
         price = self._get_price(event.symbol, event.timestamp)
 
         if event.side is Side.BUY:
-            return (
-                self._alpha_flow.portfolio.get_buying_power(
-                    self.margin, event.timestamp
-                )
-                >= event.qty * price
-            )
+            return self._alpha_flow.portfolio.get_buying_power(self.margin, event.timestamp) >= event.qty * price
         else:
             return self._alpha_flow.portfolio.get_position(event.symbol) >= event.qty
 
