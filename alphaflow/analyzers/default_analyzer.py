@@ -160,7 +160,12 @@ class DefaultAnalyzer(Analyzer):
         returns = [portfolio_values[i] / portfolio_values[i - 1] - 1 for i in range(1, len(portfolio_values))]
         mean_return = sum(returns) / len(returns)
         std_return = (sum((ret - mean_return) ** 2 for ret in returns) / len(returns)) ** 0.5
-        values_per_year = len(portfolio_values) / (timestamps[-1] - timestamps[0]).days * 365
+
+        period_days = (timestamps[-1] - timestamps[0]).days
+        if period_days <= 0:
+            return 0.0
+
+        values_per_year = len(portfolio_values) / period_days * 365
         if std_return == 0:
             return 0.0
         return float(mean_return * values_per_year**0.5 / std_return)
@@ -194,7 +199,11 @@ class DefaultAnalyzer(Analyzer):
         if downside_deviation == 0:
             return float("inf")  # No downside volatility
 
-        values_per_year = len(portfolio_values) / (timestamps[-1] - timestamps[0]).days * 365
+        period_days = (timestamps[-1] - timestamps[0]).days
+        if period_days <= 0:
+            return 0.0
+
+        values_per_year = len(portfolio_values) / period_days * 365
         return float(mean_return * values_per_year**0.5 / downside_deviation)
 
     def calculate_annualized_return(self, timestamps: list[datetime], portfolio_values: list[float]) -> float:

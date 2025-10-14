@@ -392,17 +392,29 @@ class AlphaFlow:
         Load all market data for symbols in the universe, publishes events chronologically
         through the EventBus, and runs all analyzers after completion.
 
+        Events are processed through a priority queue to ensure correct ordering:
+        1. All MarketDataEvents are loaded and added to the queue
+        2. The queue processes events in timestamp order
+        3. When strategies generate OrderEvents, they're added to the queue
+        4. When brokers generate FillEvents, they're added to the queue
+        5. All events at timestamp T are fully processed before moving to T+1
+
         Args:
             is_backtest: Whether to run in backtest mode. Live trading not yet implemented.
 
         Raises:
             NotImplementedError: If is_backtest is False (live trading not supported).
+            ValueError: If data_feed is not set before running.
 
         """
         if is_backtest:
             if self.data_feed is None:
                 raise ValueError("Data feed must be set before running backtest")
 
+            # Enable queue mode for proper event ordering
+            self.event_bus.enable_queue_mode()
+
+            # Load all market data events
             events: list[MarketDataEvent] = []
             for symbol in self.universe:
                 events.extend(
@@ -414,11 +426,24 @@ class AlphaFlow:
                         )
                     )
                 )
+
+            # Sort and store events for price lookups
             events = sorted(events)
             for event in events:
                 self._data[event.symbol].append(event)
+
+            # Add all market data events to the queue
             for event in events:
                 self.event_bus.publish(Topic.MARKET_DATA, event)
+
+            # Process all events in chronological order
+            # This will handle market data, orders, and fills in the correct sequence
+            self.event_bus.process_queue()
+
+            # Disable queue mode after backtest
+            self.event_bus.disable_queue_mode()
+
+            # Run analyzers after backtest completion
             for analyzer in self.analyzers:
                 logger.info("Running analyzer %s", analyzer)
                 analyzer.run()

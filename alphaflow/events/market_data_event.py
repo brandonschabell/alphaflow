@@ -32,15 +32,3 @@ class MarketDataEvent(Event):
 
     #: The volume of the bar.
     volume: float
-
-    def __gt__(self, other: MarketDataEvent) -> bool:
-        """Compare events by timestamp for sorting.
-
-        Args:
-            other: Another MarketDataEvent to compare against.
-
-        Returns:
-            True if this event's timestamp is greater than the other's.
-
-        """
-        return self.timestamp > other.timestamp

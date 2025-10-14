@@ -162,6 +162,21 @@ def test_analyzer_calculate_sharpe_ratio_single_value() -> None:
     assert sharpe == 0.0
 
 
+def test_analyzer_calculate_sharpe_ratio_same_day_span_returns_zero() -> None:
+    """Test Sharpe ratio returns 0 when timestamps fall on the same day."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [
+        datetime(2020, 1, 1, 9, 30),
+        datetime(2020, 1, 1, 10, 30),
+        datetime(2020, 1, 1, 15, 45),
+    ]
+    portfolio_values = [100.0, 101.0, 102.0]
+
+    sharpe = analyzer.calculate_sharpe_ratio(timestamps, portfolio_values)
+    assert sharpe == 0.0
+
+
 def test_analyzer_calculate_sortino_ratio() -> None:
     """Test Sortino ratio calculation."""
     analyzer = DefaultAnalyzer()
@@ -235,6 +250,21 @@ def test_analyzer_calculate_sortino_ratio_single_value() -> None:
 
     timestamps = [datetime(2020, 1, 1)]
     portfolio_values = [100.0]
+
+    sortino = analyzer.calculate_sortino_ratio(timestamps, portfolio_values)
+    assert sortino == 0.0
+
+
+def test_analyzer_calculate_sortino_ratio_same_day_span_returns_zero() -> None:
+    """Test Sortino ratio returns 0 when timestamps fall on the same day."""
+    analyzer = DefaultAnalyzer()
+
+    timestamps = [
+        datetime(2020, 1, 1, 9, 30),
+        datetime(2020, 1, 1, 11, 0),
+        datetime(2020, 1, 1, 15, 45),
+    ]
+    portfolio_values = [100.0, 99.5, 101.0]
 
     sortino = analyzer.calculate_sortino_ratio(timestamps, portfolio_values)
     assert sortino == 0.0
