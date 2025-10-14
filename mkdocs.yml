@@ -1,6 +1,10 @@
 site_name: AlphaFlow
-site_url: https://brandonschabell.com/alphaflow
+site_description: Event-driven backtesting framework for trading strategies
+site_url: https://alphaflow.readthedocs.io
 repo_url: https://github.com/brandonschabell/alphaflow
+repo_name: brandonschabell/alphaflow
+edit_uri: edit/main/docs/
+
 theme:
   name: material
   palette:
@@ -10,8 +14,61 @@ theme:
     - toc.follow
     - toc.integrate
     - navigation.top
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+
 nav:
-  - Basics: index.md
-  - Installation: installation.md
-  - Getting Started: getting_started.md
-  - Roadmap: roadmap.md
+  - Home: index.md
+  - Getting Started:
+      - Installation: installation.md
+      - Quick Start: getting_started.md
+  - API Reference:
+      - Core: api/core.md
+      - Strategies: api/strategies.md
+      - Brokers: api/brokers.md
+      - Data Feeds: api/data_feeds.md
+      - Analyzers: api/analyzers.md
+      - Events: api/events.md
+  - Development:
+      - Roadmap: roadmap.md
+      - Contributing: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/brandonschabell/alphaflow
+  version:
+    provider: mike

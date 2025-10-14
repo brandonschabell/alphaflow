@@ -102,6 +102,7 @@ flow.run()
 Here's a full working example of the backtest we just created.
 ```python
 import os
+from datetime import datetime
 
 import alphaflow as af
 from alphaflow.analyzers import DefaultAnalyzer
