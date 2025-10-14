@@ -52,7 +52,7 @@ class AlphaVantageFeed(DataFeed):
             raise NotImplementedError("Cache not implemented yet")
         else:
             url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={self.__api_key}&outputsize=full"
-            logger.debug(f"Fetching data from {url}")
+            logger.debug(f"Fetching data for symbol '{symbol}' from Alpha Vantage endpoint.")
             response = httpx.get(url)
             if response.status_code != 200:
                 raise ValueError(f"Failed to fetch data: {response.text}")
