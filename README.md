@@ -4,7 +4,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/alphaflow.svg)](https://pypi.org/project/alphaflow/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**AlphaFlow** is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development. By focusing on realism (partial fills, slippage, custom commissions) and a robust pub-sub architecture, AlphaFlow aims to provide a flexible, high-performance environment for quantitative analysts and algorithmic traders. 
+**AlphaFlow** is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development. Built on a robust pub-sub architecture, AlphaFlow provides a flexible, high-performance environment for quantitative analysts and algorithmic traders. 
 
 > **Vision**: Offer a "batteries included" backtesting experience leveraging the simplicity of Python, while also enabling unlimited customization and optimization using an event-driven architecture that can support components written in any language.
 
@@ -32,10 +32,8 @@
 - **Event-Driven Core**  
   Uses a **publish-subscribe (pub-sub)** architecture to simulate market data, order placements, and trade executions in a realistic, decoupled manner.  
 
-- **Realistic Execution & Fill Logic**  
-  - **Partial Fills**: Simulate large orders that fill over time.  
-  - **Slippage Models**: Fixed or volume-based for more accurate PnL.  
-  - **Custom Commissions**: Flat fees, per-share, tiered, or user-defined.  
+- **Commission Tracking**  
+  Built-in commission handling for realistic transaction costs.
 
 - **Multi-Asset Support**  
   Initially focused on **stocks & ETFs** with daily or intraday data, but built to extend to futures, forex, cryptocurrencies, and **options** in future releases.
@@ -50,7 +48,7 @@
   - A solid foundation for **live trading** integration in a future version (v1).
 
 - **Professional-Grade Analytics**  
-  - Built-in and user-defined performance metrics (Sharpe, Sortino, drawdown, custom risk models).  
+  - Built-in performance metrics (Sharpe, Sortino, drawdown, annualized returns).  
   - Ongoing support for event-based analytics and reporting modules.
 
 ---
@@ -63,8 +61,8 @@
 2. **Powerful & Future-Proof**  
    By embracing an **event-driven** architecture, you get fine-grained control over every aspect of your trading simulation. The transition to real-time or **live trading** is also more natural compared to purely vectorized solutions.
 
-3. **Professional Realism**  
-   Partial fills, slippage, and commission models ensure closer-to-reality simulation. Ideal for institutional or advanced retail traders needing robust prototyping.
+3. **Commission-Aware Backtesting**  
+   Built-in commission tracking ensures realistic transaction costs are accounted for in your strategy performance.
 
 4. **Performance Upgrades**  
    Future **Rust** integration will offload compute-heavy tasks, enabling large-scale backtests without major slowdowns or memory bottlenecks.

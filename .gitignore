@@ -23,3 +23,6 @@ coverage.xml
 # IDE files
 .idea/
 .vscode/
+
+# Docs
+site/

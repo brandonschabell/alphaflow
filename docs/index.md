@@ -1,34 +1,44 @@
 # Welcome to AlphaFlow
 
-**AlphaFlow** is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development. By focusing on realism (partial fills, slippage, custom commissions) and a robust pub-sub architecture, AlphaFlow aims to provide a flexible, high-performance environment for quantitative analysts and algorithmic traders. 
+**AlphaFlow** is a Python-based, event-driven backtesting framework designed for professional-grade trading research and strategy development. Built on a robust pub-sub architecture, AlphaFlow provides a flexible, high-performance environment for quantitative analysts and algorithmic traders. 
 
 > **Vision**: Offer a "batteries included" backtesting experience leveraging the simplicity of Python, while also enabling unlimited customization and optimization using an event-driven architecture that can support components written in any language.
 
-## Key Features
+## Key Features (v0.1.0)
 
   - **Event-Driven Core**  
-    - Uses a **publish-subscribe (pub-sub)** architecture to simulate market data, order placements, and trade executions in a realistic, decoupled manner.  
+    - Uses a **publish-subscribe (pub-sub)** architecture to simulate market data, order placements, and trade executions in a realistic, decoupled manner.
+    - Priority-based event queue ensures proper chronological ordering of events.
 
-  - **Realistic Execution & Fill Logic**  
-    - **Partial Fills**: Simulate large orders that fill over time.  
-    - **Slippage Models**: Fixed or volume-based for more accurate PnL.  
-    - **Custom Commissions**: Flat fees, per-share, tiered, or user-defined.  
+  - **Commission Tracking**  
+    - Built-in commission handling for realistic transaction costs.
+    - Customizable broker implementations for different commission structures.
 
   - **Multi-Asset Support**  
-    - Initially focused on **stocks & ETFs** with daily or intraday data, but built to extend to futures, forex, cryptocurrencies, and **options** in future releases.
+    - Focused on **stocks & ETFs** with daily or intraday data.
+    - Built to extend to futures, forex, cryptocurrencies, and **options** in future releases.
 
-  - **Performance-Oriented**  
-    - Planned message queue integration which will enable optimization of speed-critical components (like indicator calculations on large datasets).
+  - **Benchmark Comparison**  
+    - Compare strategy performance against market benchmarks (e.g., SPY for S&P 500).
+    - Side-by-side performance visualization.
 
   - **Extendable & Modular**  
-    - Swap out data sources (CSV, APIs, real-time feeds).  
+    - Swap out data sources (CSV, Alpha Vantage API, Financial Modeling Prep API, or build your own).
     - Plugin-style architecture for custom brokers, strategies, analytics, and risk management.
     - Components are planned to be made language agnostic in a future release (v1).
     - A solid foundation for **live trading** integration in a future version (v1).
 
   - **Professional-Grade Analytics**  
-    - Built-in and user-defined performance metrics (Sharpe, Sortino, drawdown, custom risk models).  
-    - Ongoing support for event-based analytics and reporting modules.
+    - Built-in performance metrics: Sharpe ratio, Sortino ratio, maximum drawdown, annualized returns.
+    - Customizable analytics modules for specialized reporting.
+
+## Coming in Future Releases
+
+  - **v0.2**: Slippage models, partial fills, basic technical indicators
+  - **v0.3**: Multiple timeframes, earnings/news events
+  - **v0.4**: Advanced risk management tools
+  - **v0.5**: Live trading integration
+  - **v1.0**: Performance optimization with Rust components
 
 ---
 
@@ -40,8 +50,8 @@
 2. **Powerful & Future-Proof**  
    By embracing an **event-driven** architecture, you get fine-grained control over every aspect of your trading simulation. The transition to real-time or **live trading** is also more natural compared to purely vectorized solutions.
 
-3. **Professional Realism**  
-   Partial fills, slippage, and commission models ensure closer-to-reality simulation. Ideal for institutional or advanced retail traders needing robust prototyping.
+3. **Commission-Aware Backtesting**  
+   Built-in commission tracking ensures realistic transaction costs are accounted for in your strategy performance.
 
 4. **Performance Upgrades**  
    Future **Rust** integration will offload compute-heavy tasks, enabling large-scale backtests without major slowdowns or memory bottlenecks.
