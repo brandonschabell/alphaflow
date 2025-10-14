@@ -76,7 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 - `pandas` - Data handling
-- `requests` - API data feeds
+- `httpx` - Modern HTTP client for API data feeds
 - `seaborn` - Visualization
 - `matplotlib` (via seaborn) - Plotting
 
