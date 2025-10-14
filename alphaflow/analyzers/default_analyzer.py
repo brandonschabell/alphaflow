@@ -79,8 +79,8 @@ class DefaultAnalyzer(Analyzer):
         drawdown_str = f"Max Drawdown: {100 * self.calculate_max_drawdown(portfolio_values):.2f}%"
         sharpe_str = f"Sharpe Ratio: {self.calculate_sharpe_ratio(timestamps, portfolio_values):.4f}"
         sortino_str = f"Sortino Ratio: {self.calculate_sortino_ratio(timestamps, portfolio_values):.4f}"
-        anualized_return_str = (
-            f"Anualized Return: {100 * self.calculate_anualized_return(timestamps, portfolio_values):.2f}%"
+        annualized_return_str = (
+            f"Annualized Return: {100 * self.calculate_annualized_return(timestamps, portfolio_values):.2f}%"
         )
 
         benchmark_values_dict = self._alpha_flow.portfolio.get_benchmark_values()
@@ -101,15 +101,15 @@ class DefaultAnalyzer(Analyzer):
             benchmark_drawdown = self.calculate_max_drawdown(benchmark_values)
             benchmark_sharpe = self.calculate_sharpe_ratio(benchmark_timestamps, benchmark_values)
             benchmark_sortino = self.calculate_sortino_ratio(benchmark_timestamps, benchmark_values)
-            benchmark_anualized_return = self.calculate_anualized_return(benchmark_timestamps, benchmark_values)
+            benchmark_annualized_return = self.calculate_annualized_return(benchmark_timestamps, benchmark_values)
             drawdown_str += f" (Benchmark: {100 * benchmark_drawdown:.2f}%)"
             sharpe_str += f" (Benchmark: {benchmark_sharpe:.4f})"
             sortino_str += f" (Benchmark: {benchmark_sortino:.4f})"
-            anualized_return_str += f" (Benchmark: {100 * benchmark_anualized_return:.2f}%)"
+            annualized_return_str += f" (Benchmark: {100 * benchmark_annualized_return:.2f}%)"
 
         ax.legend()
 
-        metrics_text = "\n".join([drawdown_str, sharpe_str, sortino_str, anualized_return_str])
+        metrics_text = "\n".join([drawdown_str, sharpe_str, sortino_str, annualized_return_str])
         plt.text(
             0.05,
             0.95,
@@ -184,7 +184,7 @@ class DefaultAnalyzer(Analyzer):
             return 0.0
         return float(mean_return * values_per_year**0.5 / downside_deviation)
 
-    def calculate_anualized_return(self, timestamps: list[datetime], portfolio_values: list[float]) -> float:
+    def calculate_annualized_return(self, timestamps: list[datetime], portfolio_values: list[float]) -> float:
         """Calculate the annualized return.
 
         Args:
@@ -224,6 +224,6 @@ class DefaultAnalyzer(Analyzer):
             "Max Drawdown": self.calculate_max_drawdown(portfolio_values),
             "Sharpe Ratio": self.calculate_sharpe_ratio(timestamps, portfolio_values),
             "Sortino Ratio": self.calculate_sortino_ratio(timestamps, portfolio_values),
-            "Anualized Return": self.calculate_anualized_return(timestamps, portfolio_values),
+            "Annualized Return": self.calculate_annualized_return(timestamps, portfolio_values),
             "Total Return": self.calculate_total_return(portfolio_values),
         }
