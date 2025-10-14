@@ -24,6 +24,7 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Topic :: Office/Business :: Financial',
     'Topic :: Scientific/Engineering :: Information Analysis',
     'Topic :: Software Development',
@@ -48,9 +49,33 @@ packages = [
 [tool.pytest.ini_options]
 pythonpath = ["."]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "mkdocs-material>=9.6.5",
-    "pytest>=8.3.4",
-    "ruff>=0.8.6",
+    "pytest>=8.4.2",
+    "ruff>=0.14.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "PT",  # flake8-pytest-style
+    "D",   # pydocstyle (docstring linting)
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "D203",  # one-blank-line-before-class (conflicts with D211)
+    "D213",  # multi-line-summary-second-line (conflicts with D212)
 ]

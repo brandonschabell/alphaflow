@@ -1,3 +1,5 @@
+"""Base event class for the event-driven architecture."""
+
 from dataclasses import dataclass
 from datetime import datetime
 

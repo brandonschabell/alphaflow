@@ -1,5 +1,6 @@
+"""Example backtests demonstrating various portfolio allocations."""
+
 import logging
-import os
 
 from alphaflow import AlphaFlow
 from alphaflow.analyzers import DefaultAnalyzer
@@ -9,6 +10,14 @@ from alphaflow.strategies import BuyAndHoldStrategy
 
 
 def create_analysis(title: str, file_name: str, weights: dict[str, float]) -> None:
+    """Run a backtest with the given portfolio weights and generate analysis.
+
+    Args:
+        title: Title for the analysis plot.
+        file_name: Base filename for saving the plot.
+        weights: Dictionary mapping symbols to their target portfolio weights.
+
+    """
     af = AlphaFlow()
     af.set_data_feed(AlphaVantageFeed())
     af.set_backtest_start_timestamp("2007-06-01")
@@ -23,6 +32,7 @@ def create_analysis(title: str, file_name: str, weights: dict[str, float]) -> No
 
 
 def main():
+    """Run multiple backtests with different portfolio allocations."""
     create_analysis("60% SPY / 40% Bonds", "60-40", {"SPY": 0.6, "BND": 0.4})
     create_analysis("75/25", "75-25 Split", {"SPY": 0.75, "BND": 0.25})
     create_analysis("BRKB", "BRKB", {"BRK-B": 1})
@@ -31,7 +41,11 @@ def main():
         "BRKB-Bonds-URA",
         {"BRK-B": 0.65, "BND": 0.3, "URA": 0.05},
     )
-    create_analysis("Optimized", "Optimized", {'BRK-B': 0.31995, 'QYLD': 0.19173, 'GLD': 0.38832, 'URA': 0.05, 'SHLD': 0.05})
+    create_analysis(
+        "Optimized",
+        "Optimized",
+        {"BRK-B": 0.31995, "QYLD": 0.19173, "GLD": 0.38832, "URA": 0.05, "SHLD": 0.05},
+    )
 
 
 if __name__ == "__main__":

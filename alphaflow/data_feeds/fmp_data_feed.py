@@ -1,7 +1,9 @@
-from collections.abc import Generator
-from datetime import datetime
+"""Financial Modeling Prep API data feed implementation."""
+
 import logging
 import os
+from collections.abc import Generator
+from datetime import datetime
 
 import requests
 
@@ -12,11 +14,20 @@ logger = logging.getLogger(__name__)
 
 
 class FMPDataFeed(DataFeed):
+    """Data feed that loads market data from Financial Modeling Prep API."""
+
     def __init__(
         self,
         use_cache: bool = False,
         api_key: str | None = None,
     ) -> None:
+        """Initialize the FMP data feed.
+
+        Args:
+            use_cache: Whether to cache API responses (not yet implemented).
+            api_key: FMP API key. Falls back to FMP_API_KEY env var.
+
+        """
         self._use_cache = use_cache
         self.__api_key = api_key or os.getenv("FMP_API_KEY")
 
@@ -26,6 +37,17 @@ class FMPDataFeed(DataFeed):
         start_timestamp: datetime | None,
         end_timestamp: datetime | None,
     ) -> Generator[MarketDataEvent, None, None]:
+        """Load and yield market data events from FMP API.
+
+        Args:
+            symbol: The ticker symbol to load data for.
+            start_timestamp: Optional start time for filtering data.
+            end_timestamp: Optional end time for filtering data.
+
+        Yields:
+            MarketDataEvent objects containing OHLCV data.
+
+        """
         if self._use_cache:
             raise NotImplementedError("Cache not implemented yet")
         else:

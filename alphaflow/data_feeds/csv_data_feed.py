@@ -1,6 +1,8 @@
+"""CSV file data feed implementation."""
+
+import logging
 from collections.abc import Generator
 from datetime import datetime
-import logging
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class CSVDataFeed(DataFeed):
+    """Data feed that loads market data from CSV files."""
+
     def __init__(
         self,
         file_path: Path,
@@ -24,6 +28,19 @@ class CSVDataFeed(DataFeed):
         col_close: str = "Close",
         col_volume: str = "Volume",
     ) -> None:
+        """Initialize the CSV data feed.
+
+        Args:
+            file_path: Path to the CSV file containing market data.
+            col_timestamp: Name of the timestamp column.
+            col_symbol: Name of the symbol column.
+            col_open: Name of the open price column.
+            col_high: Name of the high price column.
+            col_low: Name of the low price column.
+            col_close: Name of the close price column.
+            col_volume: Name of the volume column.
+
+        """
         self.file_path = file_path
         self._col_timestamp = col_timestamp
         self._col_symbol = col_symbol
@@ -39,6 +56,20 @@ class CSVDataFeed(DataFeed):
         start_timestamp: datetime | None,
         end_timestamp: datetime | None,
     ) -> Generator[MarketDataEvent, None, None]:
+        """Load and yield market data events from the CSV file.
+
+        Args:
+            symbol: The ticker symbol to load data for.
+            start_timestamp: Optional start time for filtering data.
+            end_timestamp: Optional end time for filtering data.
+
+        Yields:
+            MarketDataEvent objects containing OHLCV data.
+
+        Raises:
+            ValueError: If required columns are missing from the CSV.
+
+        """
         logger.debug("Opening CSV file...")
         df = pd.read_csv(self.file_path, parse_dates=[self._col_timestamp])
 
