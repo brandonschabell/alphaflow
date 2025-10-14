@@ -222,7 +222,7 @@ class Portfolio(Subscriber):
             return
 
         cost = event.fill_price * event.fill_qty  # Can be positive or negative
-        self.update_cash(-cost)
+        self.update_cash(-cost - event.commission)  # Deduct commission on all trades
         self.update_position(event.symbol, event.fill_qty)
 
 

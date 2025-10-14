@@ -154,6 +154,9 @@ class DefaultAnalyzer(Analyzer):
             Annualized Sharpe ratio assuming zero risk-free rate.
 
         """
+        if len(portfolio_values) < 2:
+            return 0.0
+
         returns = [portfolio_values[i] / portfolio_values[i - 1] - 1 for i in range(1, len(portfolio_values))]
         mean_return = sum(returns) / len(returns)
         std_return = (sum((ret - mean_return) ** 2 for ret in returns) / len(returns)) ** 0.5
@@ -175,13 +178,23 @@ class DefaultAnalyzer(Analyzer):
             Annualized Sortino ratio assuming zero risk-free rate.
 
         """
-        returns = [portfolio_values[i] / portfolio_values[i - 1] - 1 for i in range(1, len(portfolio_values))]
-        downside_returns = [min(ret, 0) for ret in returns]
-        mean_return = sum(returns) / len(returns)
-        downside_deviation = (sum((ret - mean_return) ** 2 for ret in downside_returns) / len(downside_returns)) ** 0.5
-        values_per_year = len(portfolio_values) / (timestamps[-1] - timestamps[0]).days * 365
-        if downside_deviation == 0:
+        if len(portfolio_values) < 2:
             return 0.0
+
+        returns = [portfolio_values[i] / portfolio_values[i - 1] - 1 for i in range(1, len(portfolio_values))]
+        mean_return = sum(returns) / len(returns)
+
+        if abs(mean_return) < 1e-10:
+            return 0.0
+
+        # Downside deviation: only penalize returns below zero (target return = 0)
+        # Using semi-deviation approach: square only negative returns, normalize by all returns
+        downside_deviation = (sum(min(ret, 0) ** 2 for ret in returns) / len(returns)) ** 0.5
+
+        if downside_deviation == 0:
+            return float("inf")  # No downside volatility
+
+        values_per_year = len(portfolio_values) / (timestamps[-1] - timestamps[0]).days * 365
         return float(mean_return * values_per_year**0.5 / downside_deviation)
 
     def calculate_annualized_return(self, timestamps: list[datetime], portfolio_values: list[float]) -> float:
@@ -195,7 +208,10 @@ class DefaultAnalyzer(Analyzer):
             Annualized return as a decimal (e.g., 0.10 for 10% annual return).
 
         """
-        return float((portfolio_values[-1] / portfolio_values[0]) ** (365 / (timestamps[-1] - timestamps[0]).days) - 1)
+        days = (timestamps[-1] - timestamps[0]).days
+        if days == 0:
+            return 0.0
+        return float((portfolio_values[-1] / portfolio_values[0]) ** (365 / days) - 1)
 
     def calculate_total_return(self, portfolio_values: list[float]) -> float:
         """Calculate the total return over the entire period.
