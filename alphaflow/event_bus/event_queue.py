@@ -1,9 +1,15 @@
 """Priority queue for event-driven backtesting."""
 
+from __future__ import annotations
+
 import heapq
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from alphaflow.events.event import Event
+
+if TYPE_CHECKING:
+    from alphaflow.enums import Topic
 
 
 class EventQueue:
@@ -20,13 +26,14 @@ class EventQueue:
 
     def __init__(self) -> None:
         """Initialize an empty event queue."""
-        self._queue: list[tuple[datetime, int, int, Event]] = []
+        self._queue: list[tuple[datetime, int, int, Topic, Event]] = []
         self._counter = 0  # Used to break ties for events with same timestamp and priority
 
-    def push(self, event: Event, priority: int = 3) -> None:
-        """Add an event to the queue.
+    def push(self, topic: Topic, event: Event, priority: int = 3) -> None:
+        """Add an event to the queue with its associated topic.
 
         Args:
+            topic: The topic this event should be published to.
             event: The event to add to the queue.
             priority: Priority level (0 = highest). Default is 3.
                      0: MarketDataEvent
@@ -36,21 +43,21 @@ class EventQueue:
 
         """
         # Use counter to maintain FIFO order for events with same timestamp and priority
-        heapq.heappush(self._queue, (event.timestamp, priority, self._counter, event))
+        heapq.heappush(self._queue, (event.timestamp, priority, self._counter, topic, event))
         self._counter += 1
 
-    def pop(self) -> Event:
-        """Remove and return the next event from the queue.
+    def pop(self) -> tuple[Topic, Event]:
+        """Remove and return the next event with its topic from the queue.
 
         Returns:
-            The next event in chronological order.
+            A tuple of (topic, event) in chronological order.
 
         Raises:
             IndexError: If the queue is empty.
 
         """
-        _, _, _, event = heapq.heappop(self._queue)
-        return event
+        _, _, _, topic, event = heapq.heappop(self._queue)
+        return topic, event
 
     def is_empty(self) -> bool:
         """Check if the queue is empty.
@@ -61,16 +68,16 @@ class EventQueue:
         """
         return len(self._queue) == 0
 
-    def peek(self) -> Event | None:
-        """View the next event without removing it.
+    def peek(self) -> tuple[Topic, Event] | None:
+        """View the next event with its topic without removing it.
 
         Returns:
-            The next event, or None if the queue is empty.
+            A tuple of (topic, event), or None if the queue is empty.
 
         """
         if self.is_empty():
             return None
-        return self._queue[0][3]
+        return (self._queue[0][3], self._queue[0][4])
 
     def size(self) -> int:
         """Get the number of events in the queue.

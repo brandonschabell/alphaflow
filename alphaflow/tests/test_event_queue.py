@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from alphaflow.enums import OrderType, Side
+from alphaflow.enums import OrderType, Side, Topic
 from alphaflow.event_bus.event_queue import EventQueue
 from alphaflow.events import FillEvent, MarketDataEvent, OrderEvent
 
@@ -30,13 +30,17 @@ def test_event_queue_push_pop() -> None:
         volume=1000.0,
     )
 
-    queue.push(event1, priority=0)
+    queue.push(Topic.MARKET_DATA, event1, priority=0)
 
     assert not queue.is_empty()
     assert queue.size() == 1
-    assert queue.peek() == event1
+    peek_result = queue.peek()
+    assert peek_result is not None
+    assert peek_result[0] == Topic.MARKET_DATA
+    assert peek_result[1] == event1
 
-    popped = queue.pop()
+    topic, popped = queue.pop()
+    assert topic == Topic.MARKET_DATA
     assert popped == event1
     assert queue.is_empty()
 
@@ -76,14 +80,17 @@ def test_event_queue_chronological_order() -> None:
     )
 
     # Add events out of order
-    queue.push(event1, priority=0)
-    queue.push(event2, priority=0)
-    queue.push(event3, priority=0)
+    queue.push(Topic.MARKET_DATA, event1, priority=0)
+    queue.push(Topic.MARKET_DATA, event2, priority=0)
+    queue.push(Topic.MARKET_DATA, event3, priority=0)
 
     # Should come out in chronological order
-    assert queue.pop() == event2  # 2020-01-01
-    assert queue.pop() == event3  # 2020-01-02
-    assert queue.pop() == event1  # 2020-01-03
+    _, evt2 = queue.pop()
+    assert evt2 == event2  # 2020-01-01
+    _, evt3 = queue.pop()
+    assert evt3 == event3  # 2020-01-02
+    _, evt1 = queue.pop()
+    assert evt1 == event1  # 2020-01-03
 
 
 def test_event_queue_priority_order() -> None:
@@ -119,14 +126,17 @@ def test_event_queue_priority_order() -> None:
     )
 
     # Add events in wrong order (fill, order, market)
-    queue.push(fill_event, priority=2)
-    queue.push(order_event, priority=1)
-    queue.push(market_event, priority=0)
+    queue.push(Topic.FILL, fill_event, priority=2)
+    queue.push(Topic.ORDER, order_event, priority=1)
+    queue.push(Topic.MARKET_DATA, market_event, priority=0)
 
     # Should come out in priority order (market, order, fill)
-    assert isinstance(queue.pop(), MarketDataEvent)
-    assert isinstance(queue.pop(), OrderEvent)
-    assert isinstance(queue.pop(), FillEvent)
+    _, evt1 = queue.pop()
+    assert isinstance(evt1, MarketDataEvent)
+    _, evt2 = queue.pop()
+    assert isinstance(evt2, OrderEvent)
+    _, evt3 = queue.pop()
+    assert isinstance(evt3, FillEvent)
 
 
 def test_event_queue_fifo_for_same_priority() -> None:
@@ -166,20 +176,20 @@ def test_event_queue_fifo_for_same_priority() -> None:
     )
 
     # Add events with same timestamp and priority
-    queue.push(event1, priority=0)
-    queue.push(event2, priority=0)
-    queue.push(event3, priority=0)
+    queue.push(Topic.MARKET_DATA, event1, priority=0)
+    queue.push(Topic.MARKET_DATA, event2, priority=0)
+    queue.push(Topic.MARKET_DATA, event3, priority=0)
 
     # Should come out in FIFO order
-    popped1 = queue.pop()
+    _, popped1 = queue.pop()
     assert isinstance(popped1, MarketDataEvent)
     assert popped1.symbol == "AAPL"
 
-    popped2 = queue.pop()
+    _, popped2 = queue.pop()
     assert isinstance(popped2, MarketDataEvent)
     assert popped2.symbol == "GOOGL"
 
-    popped3 = queue.pop()
+    _, popped3 = queue.pop()
     assert isinstance(popped3, MarketDataEvent)
     assert popped3.symbol == "MSFT"
 
@@ -198,15 +208,20 @@ def test_event_queue_peek_does_not_remove() -> None:
         volume=1000.0,
     )
 
-    queue.push(event, priority=0)
+    queue.push(Topic.MARKET_DATA, event, priority=0)
 
     # Peek multiple times
-    assert queue.peek() == event
-    assert queue.peek() == event
+    peek_result = queue.peek()
+    assert peek_result is not None
+    assert peek_result[1] == event
+    peek_result2 = queue.peek()
+    assert peek_result2 is not None
+    assert peek_result2[1] == event
     assert queue.size() == 1
 
     # Pop removes it
-    assert queue.pop() == event
+    _, popped = queue.pop()
+    assert popped == event
     assert queue.is_empty()
 
 
@@ -224,7 +239,7 @@ def test_event_queue_clear() -> None:
             close=100.5,
             volume=1000.0,
         )
-        queue.push(event, priority=0)
+        queue.push(Topic.MARKET_DATA, event, priority=0)
 
     assert queue.size() == 5
 
@@ -277,24 +292,24 @@ def test_event_queue_mixed_event_types() -> None:
     )
 
     # Add in random order
-    queue.push(market_event_t2, priority=0)
-    queue.push(fill_event_t1, priority=2)
-    queue.push(order_event_t1, priority=1)
-    queue.push(market_event_t1, priority=0)
+    queue.push(Topic.MARKET_DATA, market_event_t2, priority=0)
+    queue.push(Topic.FILL, fill_event_t1, priority=2)
+    queue.push(Topic.ORDER, order_event_t1, priority=1)
+    queue.push(Topic.MARKET_DATA, market_event_t1, priority=0)
 
     # Should get: market@9:30, order@9:30, fill@9:30, market@9:31
-    event1 = queue.pop()
+    _, event1 = queue.pop()
     assert isinstance(event1, MarketDataEvent)
     assert event1.timestamp == datetime(2020, 1, 1, 9, 30)
 
-    event2 = queue.pop()
+    _, event2 = queue.pop()
     assert isinstance(event2, OrderEvent)
     assert event2.timestamp == datetime(2020, 1, 1, 9, 30)
 
-    event3 = queue.pop()
+    _, event3 = queue.pop()
     assert isinstance(event3, FillEvent)
     assert event3.timestamp == datetime(2020, 1, 1, 9, 30)
 
-    event4 = queue.pop()
+    _, event4 = queue.pop()
     assert isinstance(event4, MarketDataEvent)
     assert event4.timestamp == datetime(2020, 1, 1, 9, 31)

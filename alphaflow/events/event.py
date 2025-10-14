@@ -63,18 +63,3 @@ class Event:
 
         """
         return self.timestamp >= other.timestamp
-
-    def __eq__(self, other: object) -> bool:
-        """Compare events for equality.
-
-        Args:
-            other: Another object to compare against.
-
-        Returns:
-            True if the events are equal (all fields match).
-
-        """
-        if not isinstance(other, Event):
-            return NotImplemented
-        # Use dataclass default equality (compares all fields)
-        return self.__dict__ == other.__dict__

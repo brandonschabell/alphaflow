@@ -77,10 +77,10 @@ class EventBus:
             else:
                 priority = 3  # Other events
 
-            self.event_queue.push(event, priority)
-            logger.debug("Queued event %s with priority %d", event, priority)
+            self.event_queue.push(topic, event, priority)
+            logger.debug("Queued event %s on topic %s with priority %d", event, topic, priority)
         else:
-            # Immediate publishing (legacy behavior)
+            # Immediate publishing for live trading
             self._deliver_event(topic, event)
 
     def _deliver_event(self, topic: Topic, event: Event) -> None:
@@ -99,21 +99,10 @@ class EventBus:
         """Process all events in the queue in chronological order.
 
         Events are processed one at a time, with each event being delivered
-        to all subscribers before the next event is processed. This ensures
-        proper ordering even when events generate other events.
+        to all subscribers of its associated topic before the next event is
+        processed. This ensures proper ordering even when events generate
+        other events.
         """
         while not self.event_queue.is_empty():
-            event = self.event_queue.pop()
-
-            # Determine which topic(s) this event should be published to
-            if isinstance(event, MarketDataEvent):
-                topic = Topic.MARKET_DATA
-            elif isinstance(event, OrderEvent):
-                topic = Topic.ORDER
-            elif isinstance(event, FillEvent):
-                topic = Topic.FILL
-            else:
-                logger.warning("Unknown event type: %s", type(event))
-                continue
-
+            topic, event = self.event_queue.pop()
             self._deliver_event(topic, event)
