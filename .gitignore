@@ -26,3 +26,7 @@ coverage.xml
 
 # Docs
 site/
+
+# Internal/confidential documents
+INTERNAL_*.md
+*_INTERNAL.md

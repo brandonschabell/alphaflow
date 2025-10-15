@@ -4,7 +4,7 @@
 
 > **Vision**: Offer a "batteries included" backtesting experience leveraging the simplicity of Python, while also enabling unlimited customization and optimization using an event-driven architecture that can support components written in any language.
 
-## Key Features (v0.1.0)
+## Key Features
 
   - **Event-Driven Core**  
     - Uses a **publish-subscribe (pub-sub)** architecture to simulate market data, order placements, and trade executions in a realistic, decoupled manner.
@@ -34,11 +34,17 @@
 
 ## Coming in Future Releases
 
-  - **v0.2**: Slippage models, partial fills, basic technical indicators
-  - **v0.3**: Multiple timeframes, earnings/news events
-  - **v0.4**: Advanced risk management tools
-  - **v0.5**: Live trading integration
-  - **v1.0**: Performance optimization with Rust components
+AlphaFlow is evolving to become a comprehensive trading platform. Our development focuses on:
+
+  - **Realistic Execution**: Slippage models, partial fills, latency simulation, and order rejections
+  - **Multi-Timeframe Support**: Mix second, minute, and daily data in a single backtest
+  - **Advanced Tools**: Technical indicators, advanced order types, strategy validation framework
+  - **Live Trading**: Real-time data feeds, paper trading, broker connectivity
+  - **Operational Excellence**: Monitoring, logging, performance optimization
+  - **Multi-Asset Expansion**: Futures, forex, crypto, and options support
+  - **Machine Learning**: First-class ML integration with proper time-series handling
+
+See the [Roadmap](roadmap.md) for more details.
 
 ---
 
@@ -54,7 +60,7 @@
    Built-in commission tracking ensures realistic transaction costs are accounted for in your strategy performance.
 
 4. **Performance Upgrades**  
-   Future **Rust** integration will offload compute-heavy tasks, enabling large-scale backtests without major slowdowns or memory bottlenecks.
+   Future performance optimizations (including potential Rust components for hot paths) will enable large-scale backtests without major slowdowns or memory bottlenecks.
 
 5. **Community & Extensibility**  
    Built to be **plugin-friendly**, allowing the community to add new data feeds, brokers, analytics modules, and advanced features without modifying the core.
