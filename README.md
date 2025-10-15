@@ -1,6 +1,7 @@
 # AlphaFlow
 
 [![CI](https://github.com/brandonschabell/alphaflow/actions/workflows/ci.yml/badge.svg)](https://github.com/brandonschabell/alphaflow/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/alphaflow.svg)](https://pypi.python.org/pypi/alphaflow)
 [![Python Versions](https://img.shields.io/pypi/pyversions/alphaflow.svg)](https://pypi.org/project/alphaflow/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
