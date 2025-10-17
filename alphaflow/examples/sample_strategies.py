@@ -3,6 +3,8 @@
 import logging
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from alphaflow import AlphaFlow
 from alphaflow.analyzers import DefaultAnalyzer
 from alphaflow.brokers import SimpleBroker
@@ -50,5 +52,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # Load environment variables from .env file
+    load_dotenv()
     logging.basicConfig(level=logging.INFO)
     main()

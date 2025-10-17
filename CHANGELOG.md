@@ -2,8 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- **Polygon.io Data Feed** - New data source supporting daily and intraday market data
+- **`.env` File Support** - Store API keys securely without committing them to version control
+
+### Changed
+- Examples now automatically load API keys from `.env` file
+- Added `python-dotenv>=1.0.0` dependency
+
+### Fixed
+- Timestamp handling now works correctly across all system timezones
 
 ## [0.1.0] - 2025-10-14
 
