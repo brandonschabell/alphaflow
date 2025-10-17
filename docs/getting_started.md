@@ -58,6 +58,45 @@ flow.set_data_feed(FMPDataFeed(api_key="<USE YOUR API KEY HERE>"))
 # export FMP_API_KEY="<USE YOUR API KEY HERE>"
 ```
 
+### Managing API Keys with .env Files
+For better security and convenience, you can store your API keys in a `.env` file instead of hardcoding them. AlphaFlow automatically loads environment variables from a `.env` file in your project directory.
+
+Create a `.env` file in your project directory:
+
+```
+FMP_API_KEY=your_actual_api_key_here
+POLYGON_API_KEY=your_polygon_key_here
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key_here
+```
+
+Then in your code, simply use:
+
+```python
+from alphaflow.data_feeds import FMPDataFeed
+
+# API key will be loaded from .env automatically
+flow.set_data_feed(FMPDataFeed())
+```
+
+!!! warning
+    Never commit your `.env` file to version control! Add it to your `.gitignore` file.
+
+### Other Data Feed Options
+AlphaFlow supports multiple data providers:
+
+- **PolygonDataFeed**: Real-time and historical data from [Polygon.io](https://polygon.io/)
+- **AlphaVantageFeed**: Free market data from [Alpha Vantage](https://www.alphavantage.co/)
+- **CSVDataFeed**: Load data from local CSV files for testing or custom data sources
+
+Example using Polygon:
+
+```python
+from alphaflow.data_feeds import PolygonDataFeed
+
+# Requires POLYGON_API_KEY in .env or environment
+flow.set_data_feed(PolygonDataFeed())
+```
+
 ## Add a Strategy
 Just like with data sources, there are no limits to the number of strategies that you define. Each strategy is able to subscribe to any events required, and each can generate their own `OrderEvents`. For our example, however, we only need a simple `BuyAndHoldStrategy`. This strategy will look at the market value of your portfolio's positions, and will generate `OrderEvents` if it needs to rebalance your portfolio to maintain the specified distribution. Let's create a `BuyAndHoldStrategy` that maintains a portfolio comprised of 75% Berkshire Hathaway (BRK-B) and 25% bonds (BND).
 
