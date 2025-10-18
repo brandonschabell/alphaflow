@@ -51,12 +51,12 @@ class FMPDataFeed(DataFeed):
         if self._use_cache:
             raise NotImplementedError("Cache not implemented yet")
         else:
-            url = f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={self.__api_key}"
+            url = f"https://financialmodelingprep.com/stable/historical-price-eod/dividend-adjusted?symbol={symbol}&apikey={self.__api_key}"
             if start_timestamp:
                 url += f"&from={start_timestamp.date()}"
             if end_timestamp:
                 url += f"&to={end_timestamp.date()}"
-            logger.debug(f"Fetching data for symbol '{symbol}' from FMP historical-price-full endpoint")
+            logger.debug(f"Fetching data for symbol '{symbol}' from FMP stable historical-price-eod endpoint")
             try:
                 response = httpx.get(url, timeout=httpx.Timeout(30.0))
                 response.raise_for_status()
@@ -64,13 +64,17 @@ class FMPDataFeed(DataFeed):
             except httpx.HTTPError as e:
                 logger.error(f"HTTP error while fetching data from FMP: {e}")
                 raise ValueError(f"Failed to fetch data from FMP: {e}") from e
-            for row in data["historical"]:
+
+            # Sort data by date to ensure chronological order (oldest first)
+            sorted_data = sorted(data, key=lambda x: x["date"])
+
+            for row in sorted_data:
                 event = MarketDataEvent(
                     timestamp=datetime.strptime(row["date"], "%Y-%m-%d"),
                     symbol=symbol,
-                    open=row["open"],
-                    high=row["high"],
-                    low=row["low"],
+                    open=row["adjOpen"],
+                    high=row["adjHigh"],
+                    low=row["adjLow"],
                     close=row["adjClose"],
                     volume=row["volume"],
                 )
