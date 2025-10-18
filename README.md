@@ -122,17 +122,20 @@
     ```python
     from datetime import datetime
 
-    import alphaflow as af
+    from alphaflow import AlphaFlow
+    from alphaflow.brokers import SimpleBroker
+    from alphaflow.data_feeds import CSVDataFeed
+    from alphaflow.strategies import BuyAndHoldStrategy
 
     # 1. Initialize AlphaFlow
-    flow = af.AlphaFlow()
+    flow = AlphaFlow()
     flow.set_cash(100000)
     flow.set_backtest_start_timestamp(datetime(1990, 2, 10))
     flow.set_backtest_end_timestamp(datetime(2025, 1, 5))
 
     # 2. Create DataFeed (e.g., CSV-based daily bars)
     flow.set_data_feed(
-        af.data_feeds.CSVDataFeed(
+        CSVDataFeed(
             file_path="historical_data.csv",
         )
     )
@@ -143,22 +146,20 @@
 
     # 4. Initialize Strategy
     flow.add_strategy(
-        af.strategies.BuyAndHoldStrategy(
+        BuyAndHoldStrategy(
             symbol="SPY",
             target_weight=0.9
         )
     )
     flow.add_strategy(
-        af.strategies.BuyAndHoldStrategy(
+        BuyAndHoldStrategy(
             symbol="BND",
             target_weight=0.1
         )
     )
 
     # 5. Create Broker
-    flow.set_broker(
-        af.brokers.SimpleBroker()
-    )
+    flow.set_broker(SimpleBroker())
 
     # 6. Run the backtest
     flow.run()
