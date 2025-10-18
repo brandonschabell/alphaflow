@@ -8,9 +8,9 @@ Let's walk through an example of setting up a basic buy and hold strategy in whi
 The first step of running AlphaFlow is to create a `flow`. Think of a `flow` as the central hub of our backtest to which every component will be attached.
 
 ```python
-import alphaflow as af
+from alphaflow import AlphaFlow
 
-flow = af.AlphaFlow()
+flow = AlphaFlow()
 ```
 That's it! You're done with step 1.
 
@@ -143,7 +143,7 @@ Here's a full working example of the backtest we just created.
 import os
 from datetime import datetime
 
-import alphaflow as af
+from alphaflow import AlphaFlow
 from alphaflow.analyzers import DefaultAnalyzer
 from alphaflow.brokers import SimpleBroker
 from alphaflow.data_feeds import FMPDataFeed
@@ -153,7 +153,7 @@ from alphaflow.strategies import BuyAndHoldStrategy
 os.environ["FMP_API_KEY"] = "<YOUR API KEY>"
 
 # Create flow
-flow = af.AlphaFlow()
+flow = AlphaFlow()
 
 # Set cash and backtest time period
 flow.set_cash(100000)
