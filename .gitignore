@@ -10,6 +10,10 @@ wheels/
 # Virtual environments
 .venv
 
+# Environment variables
+.env
+.env.local
+
 # Testing and coverage
 .pytest_cache/
 .coverage
@@ -26,3 +30,7 @@ coverage.xml
 
 # Docs
 site/
+
+# Internal/confidential documents
+INTERNAL_*.md
+*_INTERNAL.md
