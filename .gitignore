@@ -14,6 +14,12 @@ wheels/
 .env
 .env.local
 
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
 # Testing and coverage
 .pytest_cache/
 .coverage
