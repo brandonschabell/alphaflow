@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from unittest.mock import patch
 
+import httpx
 import pytest
 from dotenv import load_dotenv
 from pytest_httpx import HTTPXMock
@@ -262,7 +263,7 @@ def test_polygon_data_feed_http_error(httpx_mock: HTTPXMock) -> None:
 
     data_feed = PolygonDataFeed(api_key="test_key")
 
-    with pytest.raises(ValueError, match="Failed to fetch data from Polygon"):
+    with pytest.raises(httpx.HTTPStatusError, match="500 Internal Server Error"):
         list(
             data_feed.run(
                 symbol="AAPL",

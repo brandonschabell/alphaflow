@@ -9,6 +9,7 @@ import httpx
 
 from alphaflow import DataFeed
 from alphaflow.events.market_data_event import MarketDataEvent
+from alphaflow.utils import http_request_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -20,16 +21,25 @@ class FMPDataFeed(DataFeed):
         self,
         use_cache: bool = False,
         api_key: str | None = None,
+        rate_limit_retries: int = 3,
+        rate_limit_backoff: float = 60.0,
+        rate_limit_backoff_multiplier: float = 1.0,
     ) -> None:
         """Initialize the FMP data feed.
 
         Args:
             use_cache: Whether to cache API responses (not yet implemented).
             api_key: FMP API key. Falls back to FMP_API_KEY env var.
+            rate_limit_retries: Number of retry attempts for 429 rate limit errors (default: 3).
+            rate_limit_backoff: Initial backoff delay in seconds for rate limit errors (default: 60).
+            rate_limit_backoff_multiplier: Multiplier for exponential backoff (default: 1.0).
 
         """
         self._use_cache = use_cache
         self.__api_key = api_key or os.getenv("FMP_API_KEY")
+        self.rate_limit_retries = rate_limit_retries
+        self.rate_limit_backoff = rate_limit_backoff
+        self.rate_limit_backoff_multiplier = rate_limit_backoff_multiplier
 
     def run(
         self,
@@ -57,13 +67,13 @@ class FMPDataFeed(DataFeed):
             if end_timestamp:
                 url += f"&to={end_timestamp.date()}"
             logger.debug(f"Fetching data for symbol '{symbol}' from FMP stable historical-price-eod endpoint")
-            try:
-                response = httpx.get(url, timeout=httpx.Timeout(30.0))
-                response.raise_for_status()
-                data = response.json()
-            except httpx.HTTPError as e:
-                logger.error(f"HTTP error while fetching data from FMP: {e}")
-                raise ValueError(f"Failed to fetch data from FMP: {e}") from e
+            data = http_request_with_backoff(
+                request_func=lambda: httpx.get(url, timeout=httpx.Timeout(30.0)),
+                retries=self.rate_limit_retries,
+                backoff=self.rate_limit_backoff,
+                backoff_multiplier=self.rate_limit_backoff_multiplier,
+                error_message="Failed to fetch data from FMP",
+            )
 
             # Sort data by date to ensure chronological order (oldest first)
             sorted_data = sorted(data, key=lambda x: x["date"])
