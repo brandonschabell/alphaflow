@@ -210,7 +210,7 @@ def test_fmp_data_feed_handles_http_error(mock_get: Any) -> None:
     )
 
     data_feed = FMPDataFeed(api_key="test_key")
-    with pytest.raises(ValueError, match="Failed to fetch data from FMP"):
+    with pytest.raises(httpx.HTTPStatusError, match="404 Not Found"):
         list(
             data_feed.run(
                 symbol="INVALID",

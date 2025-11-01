@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Polygon.io Data Feed** - New data source supporting daily and intraday market data
 - **`.env` File Support** - Store API keys securely without committing them to version control
+- **Rate Limit Handling** - Automatic retry with configurable backoff for API rate limits (HTTP 429 errors)
 
 ### Changed
 - Examples now automatically load API keys from `.env` file

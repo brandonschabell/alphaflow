@@ -9,6 +9,7 @@ import httpx
 
 from alphaflow import DataFeed
 from alphaflow.events.market_data_event import MarketDataEvent
+from alphaflow.utils import http_request_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -20,16 +21,25 @@ class AlphaVantageFeed(DataFeed):
         self,
         use_cache: bool = False,
         api_key: str | None = None,
+        rate_limit_retries: int = 3,
+        rate_limit_backoff: float = 60.0,
+        rate_limit_backoff_multiplier: float = 1.0,
     ) -> None:
         """Initialize the Alpha Vantage data feed.
 
         Args:
             use_cache: Whether to cache API responses (not yet implemented).
             api_key: Alpha Vantage API key. Falls back to ALPHA_VANTAGE_API_KEY env var.
+            rate_limit_retries: Number of retry attempts for 429 rate limit errors (default: 3).
+            rate_limit_backoff: Initial backoff delay in seconds for rate limit errors (default: 60).
+            rate_limit_backoff_multiplier: Multiplier for exponential backoff (default: 1.0).
 
         """
         self._use_cache = use_cache
         self.__api_key = api_key or os.getenv("ALPHA_VANTAGE_API_KEY")
+        self.rate_limit_retries = rate_limit_retries
+        self.rate_limit_backoff = rate_limit_backoff
+        self.rate_limit_backoff_multiplier = rate_limit_backoff_multiplier
 
     def run(
         self,
@@ -53,12 +63,13 @@ class AlphaVantageFeed(DataFeed):
         else:
             url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={self.__api_key}&outputsize=full"
             logger.debug(f"Fetching data for symbol '{symbol}' from Alpha Vantage endpoint.")
-            try:
-                response = httpx.get(url, timeout=httpx.Timeout(30.0))
-                response.raise_for_status()
-                data = response.json()
-            except httpx.HTTPError as e:
-                raise ValueError(f"Failed to fetch data: {e}") from e
+            data = http_request_with_backoff(
+                request_func=lambda: httpx.get(url, timeout=httpx.Timeout(30.0)),
+                retries=self.rate_limit_retries,
+                backoff=self.rate_limit_backoff,
+                backoff_multiplier=self.rate_limit_backoff_multiplier,
+                error_message="Failed to fetch data from Alpha Vantage",
+            )
             for date, datum in data["Time Series (Daily)"].items():
                 event = MarketDataEvent(
                     timestamp=datetime.strptime(date, "%Y-%m-%d"),

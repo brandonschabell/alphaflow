@@ -4,11 +4,14 @@ import logging
 import os
 from collections.abc import Generator
 from datetime import datetime, timezone
+from functools import partial
+from typing import cast
 
 import httpx
 
 from alphaflow import DataFeed
 from alphaflow.events.market_data_event import MarketDataEvent
+from alphaflow.utils import http_request_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +30,9 @@ class PolygonDataFeed(DataFeed):
         api_key: str | None = None,
         timeframe: str = "day",
         multiplier: int = 1,
+        rate_limit_retries: int = 3,
+        rate_limit_backoff: float = 60.0,
+        rate_limit_backoff_multiplier: float = 1.0,
     ) -> None:
         """Initialize the Polygon.io data feed.
 
@@ -34,6 +40,9 @@ class PolygonDataFeed(DataFeed):
             api_key: Polygon.io API key. Falls back to POLYGON_API_KEY env var.
             timeframe: Timeframe for bars ('minute', 'hour', 'day', 'week', 'month').
             multiplier: Multiplier for the timeframe (e.g., 5 for 5-minute bars).
+            rate_limit_retries: Number of retry attempts for 429 rate limit errors (default: 3).
+            rate_limit_backoff: Initial backoff delay in seconds for rate limit errors (default: 60).
+            rate_limit_backoff_multiplier: Multiplier for exponential backoff (default: 1.0).
 
         """
         self.__api_key = api_key or os.getenv("POLYGON_API_KEY")
@@ -44,6 +53,9 @@ class PolygonDataFeed(DataFeed):
 
         self.timeframe = timeframe
         self.multiplier = multiplier
+        self.rate_limit_retries = rate_limit_retries
+        self.rate_limit_backoff = rate_limit_backoff
+        self.rate_limit_backoff_multiplier = rate_limit_backoff_multiplier
 
     def run(
         self,
@@ -77,7 +89,7 @@ class PolygonDataFeed(DataFeed):
             f"{self.BASE_URL}/v2/aggs/ticker/{symbol}/range/{self.multiplier}/{self.timeframe}/{start_date}/{end_date}"
         )
 
-        params = {
+        params: dict[str, str | int | None] = {
             "apiKey": self.__api_key,
             "adjusted": "true",  # Use adjusted prices (splits, dividends)
             "sort": "asc",  # Chronological order
@@ -86,12 +98,14 @@ class PolygonDataFeed(DataFeed):
 
         logger.info(f"Fetching {self.multiplier}{self.timeframe} data for '{symbol}' from {start_date} to {end_date}")
 
-        try:
-            response = httpx.get(url, params=params, timeout=httpx.Timeout(30.0))
-            response.raise_for_status()
-            data = response.json()
-        except httpx.HTTPError as e:
-            raise ValueError(f"Failed to fetch data from Polygon: {e}") from e
+        # Fetch initial page with retry/backoff
+        data = http_request_with_backoff(
+            request_func=lambda: httpx.get(url, params=params, timeout=httpx.Timeout(30.0)),
+            retries=self.rate_limit_retries,
+            backoff=self.rate_limit_backoff,
+            backoff_multiplier=self.rate_limit_backoff_multiplier,
+            error_message="Failed to fetch data from Polygon",
+        )
 
         # Check response status
         if data.get("status") != "OK":
@@ -131,7 +145,7 @@ class PolygonDataFeed(DataFeed):
         page_count = 1
 
         while data.get("next_url"):
-            next_url = data["next_url"]
+            next_url = cast(str, data["next_url"])
 
             # Detect circular pagination (same URL appearing again)
             if next_url in seen_urls:
@@ -141,9 +155,13 @@ class PolygonDataFeed(DataFeed):
             seen_urls.add(next_url)
 
             try:
-                response = httpx.get(next_url, timeout=httpx.Timeout(30.0))
-                response.raise_for_status()
-                data = response.json()
+                data = http_request_with_backoff(
+                    request_func=partial(httpx.get, next_url, timeout=httpx.Timeout(30.0)),
+                    retries=self.rate_limit_retries,
+                    backoff=self.rate_limit_backoff,
+                    backoff_multiplier=self.rate_limit_backoff_multiplier,
+                    error_message="Failed to fetch data from Polygon",
+                )
 
                 # Check status on paginated response
                 if data.get("status") != "OK":
@@ -172,7 +190,7 @@ class PolygonDataFeed(DataFeed):
 
                 page_count += 1
 
-            except httpx.HTTPError as e:
+            except ValueError as e:
                 logger.warning(f"Failed to fetch page {page_count + 1} for {symbol}: {e}")
                 break
 
