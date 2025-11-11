@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Slippage Models** - Pluggable slippage modeling with `FixedSlippageModel` for basis point slippage
 - **Commission Models** - Three commission types: fixed per trade, per share, and percentage-based
 - **Transaction Cost Analytics** - DefaultAnalyzer now tracks slippage and commission costs
+- **Python 3.14** - Adds support for python 3.14
 
 ### Changed
 - **BREAKING**: Replaced `pandas` with `polars` for improved performance (CSVDataFeed API unchanged)
