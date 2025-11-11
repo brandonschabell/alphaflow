@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0] - 2025-11-11
 
 ### Added
 - **Polygon.io Data Feed** - New data source supporting daily and intraday market data
@@ -26,10 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Timestamp handling now works correctly across all system timezones
 
+[0.2.0]: https://github.com/brandonschabell/alphaflow/releases/tag/v0.2.0
+
 ## [0.1.1] - 2025-10-18
 
 ### Fixed
 - **FMPDataFeed**: Fixed compatibility with Financial Modeling Prep's new API endpoint. Users with free FMP accounts created after August 31, 2025 can now use the data feed.
+
+[0.1.1]: https://github.com/brandonschabell/alphaflow/releases/tag/v0.1.1
 
 ## [0.1.0] - 2025-10-14
 
