@@ -11,25 +11,33 @@ AlphaFlow is evolving from a backtesting framework into a comprehensive trading 
 
 ## Next Up
 
-### v0.2 – Realistic Execution
-Model how trades actually fill in real markets: slippage, partial fills, latency, and order rejection scenarios.
+### v0.3 – Order Types
+Essential order types for realistic strategy development.
 
-### v0.3 – Multi-Timeframe Support
-Run strategies that combine different data frequencies (tick, minute, daily) in a single backtest.
+- LIMIT, STOP, and STOP_LIMIT orders
+- Order validation and rejection handling
+- Basic partial fills
+
+### v0.4 – Indicators Foundation
+Build sophisticated signals with comprehensive technical analysis.
+
+- 20+ technical indicators (SMA, EMA, RSI, MACD, Bollinger Bands, ATR, and more)
+- Composable indicator chains
+- Feature engineering helpers
 
 ---
 
 ## On the Horizon
 
 ### Advanced Strategy Tools
-- Comprehensive technical indicator library
-- Advanced order types (stop-loss, trailing stops, bracket orders)
-- Strategy testing and validation framework
+- Multi-timeframe support (combine different data frequencies)
+- Advanced execution modeling (TWAP/VWAP, market impact, slippage)
+- Backtesting workflow tools (snapshots, replay, parameter optimization)
 
 ### Live Market Integration
-- Real-time data feed support
 - Paper trading environment
-- Broker connectivity (Interactive Brokers, Alpaca, others)
+- Real-time data feed support
+- Broker connectivity (Interactive Brokers, Alpaca, TD Ameritrade)
 
 ### Operational Infrastructure
 - Monitoring, logging, and alerting
@@ -52,8 +60,8 @@ Build and deploy ML-driven strategies with proper time-series handling, feature 
 ### Advanced Analytics
 - Portfolio optimization and rebalancing
 - Risk analytics (VaR, CVaR, stress testing)
-- Transaction cost analysis
 - Performance attribution
+- Alternative data integration (news, sentiment, fundamentals)
 
 ### Platform Maturity
 - Distributed backtesting
@@ -68,8 +76,9 @@ Build and deploy ML-driven strategies with proper time-series handling, feature 
 AlphaFlow v1.0 will represent a production-grade platform with:
 - Proven live trading across multiple asset classes
 - Comprehensive test coverage and security validation
-- High-performance event processing
+- High-performance event processing (1M+ events/second)
 - Stable API with semantic versioning guarantees
+- Enterprise-ready operational maturity
 
 ---
 
