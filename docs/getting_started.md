@@ -127,7 +127,7 @@ An analyzer is used to evaluate the performance of our strategy. The `DefaultAna
 ```python
 from alphaflow.analyzers import DefaultAnalyzer
 
-flow.add_analyzer(DefaultAnalyzer(plot_path="example_analysis.png", plot_title="Example Analysis"))
+flow.add_analyzer(DefaultAnalyzer(plot_path="example_analysis.html", plot_title="Example Analysis"))
 ```
 
 ## Run the Backtest
@@ -182,7 +182,7 @@ flow.add_strategy(
 flow.set_broker(SimpleBroker())
 
 # Add analyzer
-flow.add_analyzer(DefaultAnalyzer(plot_path="example_analysis.png", plot_title="Example Analysis"))
+flow.add_analyzer(DefaultAnalyzer(plot_path="example_analysis.html", plot_title="Example Analysis"))
 
 # Run backtest
 flow.run()

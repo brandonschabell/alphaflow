@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **BREAKING**: Replaced `pandas` with `polars` for improved performance (CSVDataFeed API unchanged)
+- **BREAKING**: Replaced `seaborn`/`matplotlib` with `plotly` for interactive visualizations
 - Examples now automatically load API keys from `.env` file
 - Added `python-dotenv>=1.0.0` dependency
 - `SimpleBroker` accepts optional `slippage_model` and `commission_model` parameters

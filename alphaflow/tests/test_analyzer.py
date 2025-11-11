@@ -21,7 +21,7 @@ def test_default_analyzer_initialization() -> None:
 
 def test_default_analyzer_initialization_with_plot_path() -> None:
     """Test analyzer initialization with custom plot path."""
-    plot_path = Path("test_plot.png")
+    plot_path = Path("test_plot.html")
     plot_title = "Test Portfolio"
     analyzer = DefaultAnalyzer(plot_path=plot_path, plot_title=plot_title)
 
@@ -66,7 +66,7 @@ def test_default_analyzer_with_backtest() -> None:
 def test_default_analyzer_generate_plot() -> None:
     """Test analyzer generates a plot file."""
     with TemporaryDirectory() as tmpdir:
-        plot_path = Path(tmpdir) / "test_plot.png"
+        plot_path = Path(tmpdir) / "test_plot.html"
 
         af = AlphaFlow()
         af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
@@ -88,7 +88,7 @@ def test_default_analyzer_generate_plot() -> None:
 def test_default_analyzer_with_benchmark() -> None:
     """Test analyzer with benchmark comparison."""
     with TemporaryDirectory() as tmpdir:
-        plot_path = Path(tmpdir) / "benchmark_plot.png"
+        plot_path = Path(tmpdir) / "benchmark_plot.html"
 
         af = AlphaFlow()
         af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))

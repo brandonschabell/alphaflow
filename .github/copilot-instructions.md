@@ -99,9 +99,8 @@ Tests use absolute paths - see `tests/test_alpha_flow.py` for hardcoded data fil
 
 ### Dependencies
 - Managed via `pyproject.toml` with hatchling build system
-- Core: polars, httpx, python-dotenv, seaborn
+- Core: polars, httpx, plotly, python-dotenv
 - Python >=3.10 (uses `from __future__ import annotations` for type hints)
-- No lockfile in repo (uses `uv.lock` locally)
 
 ### Running Examples
 ```bash

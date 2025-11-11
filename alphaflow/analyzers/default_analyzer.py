@@ -3,8 +3,7 @@
 from datetime import datetime
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.graph_objects as go
 
 from alphaflow import Analyzer
 from alphaflow.enums import Topic
@@ -70,11 +69,19 @@ class DefaultAnalyzer(Analyzer):
         for metric, value in self.calculate_all_metrics(timestamps, portfolio_values).items():
             print(f"{metric}: {value}")
 
-        fig, ax = plt.subplots(figsize=(12, 6))
-        sns.lineplot(x=timestamps, y=portfolio_values, label="Portfolio Value", ax=ax)
-        ax.set_title(self._plot_title)
-        ax.set_xlabel("Timestamp")
-        ax.set_ylabel("Portfolio Value")
+        # Create plotly figure
+        fig = go.Figure()
+
+        # Add portfolio value trace
+        fig.add_trace(
+            go.Scatter(
+                x=timestamps,
+                y=portfolio_values,
+                mode="lines",
+                name="Portfolio Value",
+                line={"width": 2},
+            )
+        )
 
         drawdown_str = f"Max Drawdown: {100 * self.calculate_max_drawdown(portfolio_values):.2f}%"
         sharpe_str = f"Sharpe Ratio: {self.calculate_sharpe_ratio(timestamps, portfolio_values):.4f}"
@@ -90,12 +97,16 @@ class DefaultAnalyzer(Analyzer):
             benchmark_values = list(benchmark_values_tuple)
             benchmark_multiple = portfolio_values[0] / benchmark_values[0]
             benchmark_values = [value * benchmark_multiple for value in benchmark_values]
-            sns.lineplot(
-                x=benchmark_timestamps,
-                y=benchmark_values,
-                label="Benchmark Value",
-                ax=ax,
-                color="orange",
+
+            # Add benchmark trace
+            fig.add_trace(
+                go.Scatter(
+                    x=benchmark_timestamps,
+                    y=benchmark_values,
+                    mode="lines",
+                    name="Benchmark Value",
+                    line={"color": "orange", "width": 2},
+                )
             )
 
             benchmark_drawdown = self.calculate_max_drawdown(benchmark_values)
@@ -107,21 +118,36 @@ class DefaultAnalyzer(Analyzer):
             sortino_str += f" (Benchmark: {benchmark_sortino:.4f})"
             annualized_return_str += f" (Benchmark: {100 * benchmark_annualized_return:.2f}%)"
 
-        ax.legend()
-
-        metrics_text = "\n".join([drawdown_str, sharpe_str, sortino_str, annualized_return_str])
-        plt.text(
-            0.05,
-            0.95,
-            metrics_text,
-            transform=ax.transAxes,
-            fontsize=9,
-            verticalalignment="top",
+        # Update layout
+        metrics_text = "<br>".join([drawdown_str, sharpe_str, sortino_str, annualized_return_str])
+        fig.update_layout(
+            title=self._plot_title,
+            xaxis_title="Timestamp",
+            yaxis_title="Portfolio Value",
+            width=1200,
+            height=600,
+            hovermode="x unified",
+            annotations=[
+                {
+                    "text": metrics_text,
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0.02,
+                    "y": 0.98,
+                    "xanchor": "left",
+                    "yanchor": "top",
+                    "showarrow": False,
+                    "font": {"size": 9},
+                    "bgcolor": "rgba(255, 255, 255, 0.8)",
+                    "bordercolor": "rgba(0, 0, 0, 0.2)",
+                    "borderwidth": 1,
+                    "borderpad": 4,
+                }
+            ],
         )
 
-        fig.tight_layout()
         if self._plot_path:
-            fig.savefig(self._plot_path)
+            fig.write_html(self._plot_path)
 
     def calculate_max_drawdown(self, portfolio_values: list[float]) -> float:
         """Calculate the maximum drawdown from peak to trough.
