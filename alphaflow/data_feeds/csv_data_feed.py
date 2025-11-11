@@ -5,7 +5,7 @@ from collections.abc import Generator
 from datetime import datetime
 from pathlib import Path
 
-import pandas as pd
+import polars as pl
 
 from alphaflow import DataFeed
 from alphaflow.events.market_data_event import MarketDataEvent
@@ -71,7 +71,7 @@ class CSVDataFeed(DataFeed):
 
         """
         logger.debug("Opening CSV file...")
-        df = pd.read_csv(self.file_path, parse_dates=[self._col_timestamp])
+        df = pl.read_csv(self.file_path, try_parse_dates=True)
 
         required_cols = {
             self._col_timestamp,
@@ -86,15 +86,22 @@ class CSVDataFeed(DataFeed):
         if missing_cols:
             raise ValueError(f"Missing columns: {missing_cols}")
 
+        # Convert date column to datetime if needed (polars parses as date by default)
+        if df[self._col_timestamp].dtype == pl.Date:
+            df = df.with_columns(pl.col(self._col_timestamp).cast(pl.Datetime))
+
+        # Filter by symbol using polars
         if self._col_symbol in df.columns:
-            df = df.loc[df[self._col_symbol] == symbol]
+            df = df.filter(pl.col(self._col_symbol) == symbol)
 
-        for _, row in df.iterrows():
-            if start_timestamp and row[self._col_timestamp] < start_timestamp:
-                continue
-            if end_timestamp and row[self._col_timestamp] > end_timestamp:
-                continue
+        # Filter by timestamp bounds using polars
+        if start_timestamp:
+            df = df.filter(pl.col(self._col_timestamp) >= start_timestamp)
+        if end_timestamp:
+            df = df.filter(pl.col(self._col_timestamp) <= end_timestamp)
 
+        # Convert to dicts once after all filtering
+        for row in df.iter_rows(named=True):
             event = MarketDataEvent(
                 timestamp=row[self._col_timestamp],
                 symbol=symbol,

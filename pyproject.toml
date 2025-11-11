@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "httpx>=0.28.1",
-    "pandas>=2.2.3",
+    "polars>=1.35.2",
     "python-dotenv>=1.0.0",
     "seaborn>=0.13.2",
 ]
@@ -76,7 +76,6 @@ dev = [
     "mkdocs-material>=9.6.21",
     "mkdocstrings[python]>=0.24.0",
     "mypy>=1.18.2",
-    "pandas-stubs>=2.3.2.250926",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "pytest-httpx>=0.35.0",
