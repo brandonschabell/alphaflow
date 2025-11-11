@@ -13,6 +13,7 @@ from alphaflow.event_bus.subscriber import Subscriber
 from alphaflow.events.event import Event
 from alphaflow.events.fill_event import FillEvent
 from alphaflow.events.market_data_event import MarketDataEvent
+from alphaflow.events.order_event import OrderEvent
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,63 @@ class DataFeed:
         end_timestamp: datetime | None,
     ) -> Generator[MarketDataEvent, None, None]:
         """Run the data feed."""
+        raise NotImplementedError
+
+
+class SlippageModel:
+    """Defines the interface for slippage models.
+
+    Slippage models calculate realistic fill prices by adjusting market prices
+    based on order characteristics. Models can implement fixed slippage, volume-based
+    market impact, spread modeling, or other execution cost methodologies.
+    """
+
+    def calculate_slippage(
+        self,
+        order_event: OrderEvent,
+        market_price: float,
+        alpha_flow: AlphaFlow,
+    ) -> float:
+        """Calculate the adjusted fill price after applying slippage.
+
+        Args:
+            order_event: The order being executed, containing symbol, side, quantity, etc.
+            market_price: The market price at execution time (typically the close price).
+            alpha_flow: The AlphaFlow instance for accessing additional data if needed.
+
+        Returns:
+            The fill price after applying slippage. For buy orders, this is typically
+            higher than market_price. For sell orders, typically lower.
+
+        """
+        raise NotImplementedError
+
+
+class CommissionModel:
+    """Defines the interface for commission models.
+
+    Commission models calculate trading costs based on order and fill characteristics.
+    Models can implement fixed per-trade fees, per-share costs, percentage-based fees,
+    tiered pricing, or other commission structures.
+    """
+
+    def calculate_commission(
+        self,
+        order_event: OrderEvent,
+        fill_price: float,
+        fill_qty: float,
+    ) -> float:
+        """Calculate the commission cost for a trade.
+
+        Args:
+            order_event: The order being executed, containing order details.
+            fill_price: The price at which the order was filled.
+            fill_qty: The quantity filled (signed: positive for buys, negative for sells).
+
+        Returns:
+            The commission amount (always positive, regardless of trade direction).
+
+        """
         raise NotImplementedError
 
 

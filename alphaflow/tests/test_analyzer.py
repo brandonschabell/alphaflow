@@ -320,13 +320,17 @@ def test_analyzer_calculate_all_metrics() -> None:
 
     metrics = analyzer.calculate_all_metrics(timestamps, portfolio_values)
 
-    # Check all expected metrics are present (note: typo in analyzer code)
+    # Check all expected metrics are present
     assert "Total Return" in metrics
     assert "Max Drawdown" in metrics
     assert "Sharpe Ratio" in metrics
     assert "Sortino Ratio" in metrics
     assert "Annualized Return" in metrics
+    assert "Total Slippage Cost" in metrics
+    assert "Total Commission Cost" in metrics
+    assert "Total Transaction Costs" in metrics
+    assert "Average Slippage (bps)" in metrics
 
-    # All values should be floats
+    # All values should be strings
     for value in metrics.values():
-        assert isinstance(value, float)
+        assert isinstance(value, str)
