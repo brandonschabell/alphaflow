@@ -234,8 +234,62 @@ class DefaultAnalyzer(Analyzer):
         """
         return portfolio_values[-1] / portfolio_values[0] - 1
 
-    def calculate_all_metrics(self, timestamps: list[datetime], portfolio_values: list[float]) -> dict[str, float]:
-        """Calculate all performance metrics.
+    def calculate_total_slippage_cost(self) -> float:
+        """Calculate total slippage cost across all trades.
+
+        Compares fill prices against market close prices to quantify the
+        total cost of slippage in the backtest.
+
+        Returns:
+            Total slippage cost in absolute currency units. Positive value
+            indicates total adverse slippage (fill prices worse than market).
+
+        """
+        total_slippage = 0.0
+        for timestamp, fill_event in self._fills.items():
+            market_price = self._alpha_flow.get_price(fill_event.symbol, timestamp)
+
+            if fill_event.fill_qty > 0:  # Buy
+                # Paid more than market price (adverse slippage)
+                slippage = (fill_event.fill_price - market_price) * fill_event.fill_qty
+            else:  # Sell
+                # Received less than market price (adverse slippage)
+                slippage = (market_price - fill_event.fill_price) * abs(fill_event.fill_qty)
+
+            total_slippage += slippage
+
+        return total_slippage
+
+    def calculate_average_slippage_bps(self) -> float:
+        """Calculate average slippage in basis points per trade.
+
+        Returns:
+            Average slippage across all trades in basis points.
+            Returns 0.0 if no trades were executed.
+
+        """
+        if not self._fills:
+            return 0.0
+
+        total_bps = 0.0
+        for timestamp, fill_event in self._fills.items():
+            market_price = self._alpha_flow.get_price(fill_event.symbol, timestamp)
+            slippage_bps = abs(fill_event.fill_price - market_price) / market_price * 10000
+            total_bps += slippage_bps
+
+        return total_bps / len(self._fills)
+
+    def calculate_total_commission_cost(self) -> float:
+        """Calculate total commission paid across all trades.
+
+        Returns:
+            Total commission cost in absolute currency units.
+
+        """
+        return sum(fill_event.commission for fill_event in self._fills.values())
+
+    def calculate_all_metrics(self, timestamps: list[datetime], portfolio_values: list[float]) -> dict[str, str]:
+        """Calculate all performance metrics including transaction costs.
 
         Args:
             timestamps: List of datetime objects for each portfolio value.
@@ -245,10 +299,17 @@ class DefaultAnalyzer(Analyzer):
             Dictionary mapping metric names to their values.
 
         """
+        total_slippage = self.calculate_total_slippage_cost()
+        total_commission = self.calculate_total_commission_cost()
+
         return {
-            "Max Drawdown": self.calculate_max_drawdown(portfolio_values),
-            "Sharpe Ratio": self.calculate_sharpe_ratio(timestamps, portfolio_values),
-            "Sortino Ratio": self.calculate_sortino_ratio(timestamps, portfolio_values),
-            "Annualized Return": self.calculate_annualized_return(timestamps, portfolio_values),
-            "Total Return": self.calculate_total_return(portfolio_values),
+            "Max Drawdown": f"{self.calculate_max_drawdown(portfolio_values):.3%}",
+            "Sharpe Ratio": f"{self.calculate_sharpe_ratio(timestamps, portfolio_values):.3f}",
+            "Sortino Ratio": f"{self.calculate_sortino_ratio(timestamps, portfolio_values):.3f}",
+            "Annualized Return": f"{self.calculate_annualized_return(timestamps, portfolio_values):.3%}",
+            "Total Return": f"{self.calculate_total_return(portfolio_values):.3%}",
+            "Total Slippage Cost": f"${total_slippage:.2f}",
+            "Total Commission Cost": f"${total_commission:.2f}",
+            "Total Transaction Costs": f"${total_slippage + total_commission:.2f}",
+            "Average Slippage (bps)": f"{self.calculate_average_slippage_bps():.3f}",
         }

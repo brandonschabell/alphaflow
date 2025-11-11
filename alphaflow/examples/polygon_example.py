@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 from alphaflow import AlphaFlow
 from alphaflow.analyzers import DefaultAnalyzer
 from alphaflow.brokers import SimpleBroker
+from alphaflow.commission_models import PerShareCommissionModel
 from alphaflow.data_feeds import PolygonDataFeed
+from alphaflow.slippage_models import FixedSlippageModel
 from alphaflow.strategies import BuyAndHoldStrategy
 
 # Make sure you have POLYGON_API_KEY environment variable set
@@ -51,7 +53,12 @@ def main() -> None:
     )
 
     # Add broker
-    af.set_broker(SimpleBroker())
+    af.set_broker(
+        SimpleBroker(
+            slippage_model=FixedSlippageModel(slippage_bps=5),
+            commission_model=PerShareCommissionModel(commission_per_share=0.0035, min_commission=1.0),
+        )
+    )
 
     # Add analyzer
     af.add_analyzer(DefaultAnalyzer(plot_path=Path("polygon_backtest.png"), plot_title="Polygon.io Backtest"))
@@ -61,7 +68,7 @@ def main() -> None:
 
     # Set backtest period
     af.set_backtest_start_timestamp(datetime(2023, 1, 1))
-    af.set_backtest_end_timestamp(datetime(2024, 1, 1))
+    af.set_backtest_end_timestamp(datetime(2024, 6, 1))
 
     # Run backtest
     print("Running backtest with Polygon.io data...")

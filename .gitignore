@@ -34,3 +34,6 @@ site/
 # Internal/confidential documents
 INTERNAL_*.md
 *_INTERNAL.md
+
+# LLM
+CLAUDE.md

@@ -11,10 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Polygon.io Data Feed** - New data source supporting daily and intraday market data
 - **`.env` File Support** - Store API keys securely without committing them to version control
 - **Rate Limit Handling** - Automatic retry with configurable backoff for API rate limits (HTTP 429 errors)
+- **Slippage Models** - Pluggable slippage modeling with `FixedSlippageModel` for basis point slippage
+- **Commission Models** - Three commission types: fixed per trade, per share, and percentage-based
+- **Transaction Cost Analytics** - DefaultAnalyzer now tracks slippage and commission costs
 
 ### Changed
 - Examples now automatically load API keys from `.env` file
 - Added `python-dotenv>=1.0.0` dependency
+- `SimpleBroker` accepts optional `slippage_model` and `commission_model` parameters
 
 ### Fixed
 - Timestamp handling now works correctly across all system timezones
