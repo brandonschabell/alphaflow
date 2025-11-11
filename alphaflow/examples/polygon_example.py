@@ -61,7 +61,7 @@ def main() -> None:
     )
 
     # Add analyzer
-    af.add_analyzer(DefaultAnalyzer(plot_path=Path("polygon_backtest.png"), plot_title="Polygon.io Backtest"))
+    af.add_analyzer(DefaultAnalyzer(plot_path=Path("polygon_backtest.html"), plot_title="Polygon.io Backtest"))
 
     # Set initial capital
     af.set_cash(100000)

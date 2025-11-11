@@ -31,8 +31,8 @@ classifiers = [
 dependencies = [
     "httpx>=0.28.1",
     "polars>=1.35.2",
+    "plotly>=5.18.0",
     "python-dotenv>=1.0.0",
-    "seaborn>=0.13.2",
 ]
 
 [project.urls]
@@ -76,11 +76,11 @@ dev = [
     "mkdocs-material>=9.6.21",
     "mkdocstrings[python]>=0.24.0",
     "mypy>=1.18.2",
+    "plotly-stubs>=0.0.6",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "pytest-httpx>=0.35.0",
     "ruff>=0.14.0",
-    "types-seaborn>=0.13.2.20250914",
 ]
 
 [tool.ruff]

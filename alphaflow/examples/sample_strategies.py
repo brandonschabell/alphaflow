@@ -29,7 +29,7 @@ def create_analysis(title: str, file_name: str, weights: dict[str, float]) -> No
         af.add_strategy(BuyAndHoldStrategy(symbol=symbol, target_weight=weight, share_quantization=1))
     af.set_benchmark("SPY")
     af.set_broker(SimpleBroker())
-    af.add_analyzer(DefaultAnalyzer(plot_path=Path(f"{file_name}_av.png"), plot_title=title))
+    af.add_analyzer(DefaultAnalyzer(plot_path=Path(f"{file_name}_av.html"), plot_title=title))
     af.set_cash(100000)
     af.run()
 
