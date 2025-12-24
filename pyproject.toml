@@ -30,11 +30,11 @@ classifiers = [
     'Topic :: Software Development',
 ]
 dependencies = [
-    "httpx>=0.28.1",
-    "polars>=1.35.2",
-    "plotly>=5.18.0",
+    "httpx>=0.28.0",
+    "polars>=1.0.0",
+    "plotly>=5.0.0",
     "python-dotenv>=1.0.0",
-    "typing-extensions>=4.15.0",
+    "typing-extensions>=4.6.0",
 ]
 
 [project.urls]
@@ -75,11 +75,11 @@ pythonpath = ["."]
 
 [dependency-groups]
 dev = [
-    "mkdocs-material>=9.6.21",
+    "mkdocs-material>=9.7.1",
     "mkdocstrings[python]>=0.24.0",
     "mypy>=1.18.2",
     "plotly-stubs>=0.0.6",
-    "pytest>=8.4.2",
+    "pytest>=9.0.0",
     "pytest-cov>=7.0.0",
     "pytest-httpx>=0.35.0",
     "ruff>=0.14.0",
