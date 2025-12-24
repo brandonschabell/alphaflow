@@ -1,5 +1,6 @@
 """Tests for AlphaFlow core functionality."""
 
+import logging
 from datetime import datetime
 
 import pytest
@@ -216,6 +217,43 @@ def test_alphaflow_get_price_raises_error_for_missing_data() -> None:
     # Try to get price for a date way in the future
     with pytest.raises(ValueError, match="No price data for symbol"):
         af.get_price("AAPL", datetime(2030, 1, 1))
+
+
+def test_alphaflow_on_missing_price_warn(caplog: pytest.LogCaptureFixture) -> None:
+    """Test that on_missing_price='warn' logs a warning and returns 0.0."""
+    af = AlphaFlow(on_missing_price="warn")
+    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.add_equity("AAPL")
+    af.set_cash(10000)
+    af.set_data_start_timestamp(datetime(1980, 12, 25))
+    af.set_backtest_end_timestamp(datetime(1980, 12, 31))
+    af.run()
+
+    with caplog.at_level(logging.WARNING):
+        price = af.get_price("AAPL", datetime(2030, 1, 1))
+
+    assert price == 0.0
+    assert "No price data for symbol AAPL" in caplog.text
+
+
+def test_alphaflow_on_missing_price_ignore() -> None:
+    """Test that on_missing_price='ignore' silently returns 0.0."""
+    af = AlphaFlow(on_missing_price="ignore")
+    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.add_equity("AAPL")
+    af.set_cash(10000)
+    af.set_data_start_timestamp(datetime(1980, 12, 25))
+    af.set_backtest_end_timestamp(datetime(1980, 12, 31))
+    af.run()
+
+    price = af.get_price("AAPL", datetime(2030, 1, 1))
+    assert price == 0.0
+
+
+def test_alphaflow_on_missing_price_invalid_value() -> None:
+    """Test that invalid on_missing_price value raises ValueError."""
+    with pytest.raises(ValueError, match="on_missing_price must be 'raise', 'warn', or 'ignore'"):
+        AlphaFlow(on_missing_price="invalid")
 
 
 def test_alphaflow_run_raises_error_without_data_feed() -> None:
