@@ -308,8 +308,19 @@ class Strategy(Subscriber):
 class AlphaFlow:
     """Event-driven backtesting engine for trading strategies."""
 
-    def __init__(self) -> None:
-        """Initialize the AlphaFlow backtest engine."""
+    def __init__(self, *, on_missing_price: str = "raise") -> None:
+        """Initialize the AlphaFlow backtest engine.
+
+        Args:
+            on_missing_price: Behavior when price data is missing. Options are:
+                - "raise": Raise an error (default)
+                - "warn": Log a warning and return zero price
+                - "ignore": Silently return zero price
+
+        """
+        if on_missing_price not in ("raise", "warn", "ignore"):
+            raise ValueError("on_missing_price must be 'raise', 'warn', or 'ignore'")
+        self.on_missing_price = on_missing_price
         self.event_bus = EventBus()
         self.portfolio = Portfolio(self)
         self.strategies: list[Strategy] = []
@@ -525,4 +536,8 @@ class AlphaFlow:
         for event in self._data[symbol]:
             if event.timestamp >= timestamp:
                 return event.close
-        raise ValueError(f"No price data for symbol {symbol} after timestamp {timestamp}")
+        if self.on_missing_price == "raise":
+            raise ValueError(f"No price data for symbol {symbol} after timestamp {timestamp}")
+        elif self.on_missing_price == "warn":
+            logger.warning(f"No price data for symbol {symbol} after timestamp {timestamp}")
+        return 0.0

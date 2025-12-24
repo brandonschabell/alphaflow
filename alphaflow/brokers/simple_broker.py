@@ -90,6 +90,8 @@ class SimpleBroker(Broker):
 
         # For buys, calculate total cost including slippage and commission
         market_price = self._get_price(event.symbol, event.timestamp)
+        if market_price == 0:
+            return False
 
         # Calculate expected fill price (with slippage if model provided)
         if self.slippage_model is not None:
