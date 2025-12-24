@@ -1,8 +1,8 @@
 # Data Feeds
 
-## CSVDataFeed
+## PolarsDataFeed
 
-::: alphaflow.data_feeds.CSVDataFeed
+::: alphaflow.data_feeds.PolarsDataFeed
     options:
       show_root_heading: true
       heading_level: 3

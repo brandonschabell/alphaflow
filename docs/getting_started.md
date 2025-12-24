@@ -86,7 +86,7 @@ AlphaFlow supports multiple data providers:
 
 - **PolygonDataFeed**: Real-time and historical data from [Polygon.io](https://polygon.io/)
 - **AlphaVantageFeed**: Free market data from [Alpha Vantage](https://www.alphavantage.co/)
-- **CSVDataFeed**: Load data from local CSV files for testing or custom data sources
+- **PolarsDataFeed**: Load data from local dataframes for testing or custom data sources
 
 Example using Polygon:
 

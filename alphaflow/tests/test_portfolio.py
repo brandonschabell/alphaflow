@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 
 from alphaflow import AlphaFlow
-from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.data_feeds import PolarsDataFeed
 from alphaflow.events import FillEvent
 from alphaflow.events.market_data_event import MarketDataEvent
 
@@ -68,7 +68,7 @@ def test_portfolio_update_position() -> None:
 def test_portfolio_get_position_value() -> None:
     """Test calculating position value at a timestamp."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -89,7 +89,7 @@ def test_portfolio_get_position_value() -> None:
 def test_portfolio_get_positions_value() -> None:
     """Test calculating total positions value."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -108,7 +108,7 @@ def test_portfolio_get_positions_value() -> None:
 def test_portfolio_get_portfolio_value() -> None:
     """Test calculating total portfolio value (cash + positions)."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(5000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -128,7 +128,7 @@ def test_portfolio_get_portfolio_value() -> None:
 def test_portfolio_get_buying_power() -> None:
     """Test calculating buying power with margin."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -164,7 +164,7 @@ def test_portfolio_get_benchmark_values_no_benchmark() -> None:
 def test_portfolio_get_benchmark_values_with_benchmark() -> None:
     """Test getting benchmark values when benchmark is set."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_benchmark("AAPL")
     af.set_cash(10000)

@@ -124,7 +124,7 @@
 
     from alphaflow import AlphaFlow
     from alphaflow.brokers import SimpleBroker
-    from alphaflow.data_feeds import CSVDataFeed
+    from alphaflow.data_feeds import PolarsDataFeed
     from alphaflow.strategies import BuyAndHoldStrategy
 
     # 1. Initialize AlphaFlow
@@ -135,8 +135,8 @@
 
     # 2. Create DataFeed (e.g., CSV-based daily bars)
     flow.set_data_feed(
-        CSVDataFeed(
-            file_path="historical_data.csv",
+        PolarsDataFeed(
+            df_or_file_path="historical_data.csv",
         )
     )
 

@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from alphaflow import AlphaFlow
 from alphaflow.analyzers import DefaultAnalyzer
 from alphaflow.brokers import SimpleBroker
-from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.data_feeds import PolarsDataFeed
 from alphaflow.strategies import BuyAndHoldStrategy
 
 
@@ -44,7 +44,7 @@ def test_default_analyzer_topic_subscriptions() -> None:
 def test_default_analyzer_with_backtest() -> None:
     """Test analyzer collects data during a backtest."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
     af.set_broker(SimpleBroker())
@@ -69,7 +69,7 @@ def test_default_analyzer_generate_plot() -> None:
         plot_path = Path(tmpdir) / "test_plot.html"
 
         af = AlphaFlow()
-        af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+        af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
         af.add_equity("AAPL")
         af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
         af.set_broker(SimpleBroker())
@@ -91,7 +91,7 @@ def test_default_analyzer_with_benchmark() -> None:
         plot_path = Path(tmpdir) / "benchmark_plot.html"
 
         af = AlphaFlow()
-        af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+        af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
         af.add_equity("AAPL")
         af.set_benchmark("AAPL")  # Use AAPL as its own benchmark
         af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))

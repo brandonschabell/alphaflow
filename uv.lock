@@ -16,6 +16,7 @@ dependencies = [
     { name = "plotly" },
     { name = "polars" },
     { name = "python-dotenv" },
+    { name = "typing-extensions" },
 ]
 
 [package.dev-dependencies]
@@ -37,6 +38,7 @@ requires-dist = [
     { name = "plotly", specifier = ">=5.18.0" },
     { name = "polars", specifier = ">=1.35.2" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
+    { name = "typing-extensions", specifier = ">=4.15.0" },
 ]
 
 [package.metadata.requires-dev]

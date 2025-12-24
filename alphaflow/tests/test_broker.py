@@ -7,7 +7,7 @@ import pytest
 from alphaflow import AlphaFlow
 from alphaflow.brokers import SimpleBroker
 from alphaflow.commission_models import FixedCommissionModel, PerShareCommissionModel
-from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.data_feeds import PolarsDataFeed
 from alphaflow.enums import OrderType, Side, Topic
 from alphaflow.events import OrderEvent
 from alphaflow.events.market_data_event import MarketDataEvent
@@ -32,7 +32,7 @@ def test_simple_broker_initialization_custom_margin() -> None:
 def test_broker_executes_valid_buy_order() -> None:
     """Test broker executes a valid buy order."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -75,7 +75,7 @@ def test_broker_executes_valid_buy_order() -> None:
 def test_broker_rejects_insufficient_buying_power() -> None:
     """Test broker rejects orders with insufficient buying power."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10)  # Very low cash - only $10
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -113,7 +113,7 @@ def test_broker_rejects_insufficient_buying_power() -> None:
 def test_broker_rejects_short_sell() -> None:
     """Test broker rejects short selling (selling without position)."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -150,7 +150,7 @@ def test_broker_rejects_short_sell() -> None:
 def test_broker_allows_valid_sell() -> None:
     """Test broker allows selling shares we own."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -191,7 +191,7 @@ def test_broker_allows_valid_sell() -> None:
 def test_broker_ignores_non_order_events() -> None:
     """Test broker ignores events that aren't orders."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -229,7 +229,7 @@ def test_broker_ignores_non_order_events() -> None:
 def test_broker_with_margin() -> None:
     """Test broker allows larger positions with margin."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(1000)  # Limited cash
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -270,7 +270,7 @@ def test_broker_with_margin() -> None:
 def test_broker_with_slippage_and_commission() -> None:
     """Test broker with both slippage and commission models."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -332,7 +332,7 @@ def test_broker_with_slippage_and_commission() -> None:
 def test_broker_slippage_affects_buying_power_validation() -> None:
     """Test that slippage is considered when validating buying power."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_data_start_timestamp(datetime(1980, 12, 25))
     af.run()
@@ -377,7 +377,7 @@ def test_broker_slippage_affects_buying_power_validation() -> None:
 def test_broker_commission_affects_buying_power_validation() -> None:
     """Test that commission is considered when validating buying power."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_data_start_timestamp(datetime(1980, 12, 25))
     af.run()

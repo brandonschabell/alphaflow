@@ -8,7 +8,7 @@ import pytest
 from alphaflow import AlphaFlow
 from alphaflow.analyzers import DefaultAnalyzer
 from alphaflow.brokers import SimpleBroker
-from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.data_feeds import PolarsDataFeed
 from alphaflow.strategies import BuyAndHoldStrategy
 
 
@@ -50,7 +50,7 @@ def test_alphaflow_add_equity() -> None:
 def test_alphaflow_set_data_feed() -> None:
     """Test setting the data feed."""
     af = AlphaFlow()
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = PolarsDataFeed("alphaflow/tests/data/AAPL.csv")
 
     af.set_data_feed(data_feed)
 
@@ -174,7 +174,7 @@ def test_alphaflow_set_backtest_end_timestamp_string() -> None:
 def test_alphaflow_get_timestamps() -> None:
     """Test getting all timestamps from loaded data."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -192,7 +192,7 @@ def test_alphaflow_get_timestamps() -> None:
 def test_alphaflow_get_price() -> None:
     """Test getting price for a symbol at a timestamp."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -207,7 +207,7 @@ def test_alphaflow_get_price() -> None:
 def test_alphaflow_get_price_raises_error_for_missing_data() -> None:
     """Test get_price raises error when no data exists after timestamp."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -222,7 +222,7 @@ def test_alphaflow_get_price_raises_error_for_missing_data() -> None:
 def test_alphaflow_on_missing_price_warn(caplog: pytest.LogCaptureFixture) -> None:
     """Test that on_missing_price='warn' logs a warning and returns 0.0."""
     af = AlphaFlow(on_missing_price="warn")
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -239,7 +239,7 @@ def test_alphaflow_on_missing_price_warn(caplog: pytest.LogCaptureFixture) -> No
 def test_alphaflow_on_missing_price_ignore() -> None:
     """Test that on_missing_price='ignore' silently returns 0.0."""
     af = AlphaFlow(on_missing_price="ignore")
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
     af.set_data_start_timestamp(datetime(1980, 12, 25))
@@ -269,7 +269,7 @@ def test_alphaflow_run_raises_error_without_data_feed() -> None:
 def test_alphaflow_run_raises_error_for_live_trading() -> None:
     """Test run raises error for live trading (not implemented)."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_cash(10000)
 
@@ -280,7 +280,7 @@ def test_alphaflow_run_raises_error_for_live_trading() -> None:
 def test_alphaflow_complete_backtest_flow() -> None:
     """Test complete backtest flow with all components."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.set_benchmark("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
@@ -307,7 +307,7 @@ def test_alphaflow_complete_backtest_flow() -> None:
 def test_simple_backtest() -> None:
     """Test a simple buy-and-hold backtest with AAPL."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
     af.set_broker(SimpleBroker())

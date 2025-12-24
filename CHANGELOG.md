@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `on_missing_price` config option - control behavior when `get_price()` cannot find data: `"raise"` (default), `"warn"`, or `"ignore"`
+- `PolarsDataFeed` - Load historical data directly from Polars DataFrames
 
 ### Changed
 - Replaced `Make` with `just` for development commands
+
+### Deprecated
+- `CSVDataFeed` - Use `PolarsDataFeed` instead for loading data from CSV files
 
 ## [0.2.0] - 2025-11-11
 
