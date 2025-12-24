@@ -9,6 +9,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        resolution: [highest, lowest-direct]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v5
@@ -18,21 +21,22 @@ jobs:
           # Use oldest supported Python version for linting to ensure compatibility
           python-version: "3.10"
       - name: Install dependencies
-        run: uv sync --dev
+        run: uv sync --dev --resolution=${{ matrix.resolution }}
       - name: Run ruff linting
-        run: uv run ruff check
+        run: uv run --no-sync ruff check
       - name: Check code formatting
-        run: uv run ruff format --check
+        run: uv run --no-sync ruff format --check
       - name: Run mypy type checking
-        run: uv run mypy .
+        run: uv run --no-sync mypy .
   
   test:
-    name: Test Python ${{ matrix.python-version }}
+    name: Test Python ${{ matrix.python-version }} - ${{ matrix.resolution }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        resolution: [highest, lowest-direct]
 
     steps:
       - name: Check out repository code
@@ -44,7 +48,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --dev
+        run: uv sync --dev --resolution=${{ matrix.resolution }}
 
       - name: Run tests
-        run: uv run pytest
+        run: uv run --no-sync pytest
