@@ -1,4 +1,4 @@
-"""Tests for data feeds."""
+"""Tests for CSV data feeds."""
 
 from datetime import datetime
 
@@ -164,3 +164,16 @@ def test_csv_data_feed_empty_range() -> None:
     )
 
     assert len(events) == 0
+
+
+def test_deprecated_csv_data_feed() -> None:
+    """Test that using the deprecated CSVDataFeed issues a warning."""
+    import warnings
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+
+        assert len(w) == 1
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert "CSVDataFeed is deprecated" in str(w[-1].message)

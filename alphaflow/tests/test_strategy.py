@@ -4,7 +4,7 @@ from datetime import datetime
 
 from alphaflow import AlphaFlow
 from alphaflow.brokers import SimpleBroker
-from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.data_feeds import PolarsDataFeed
 from alphaflow.enums import Topic
 from alphaflow.strategies import BuyAndHoldStrategy
 
@@ -27,7 +27,7 @@ def test_buy_and_hold_topic_subscriptions() -> None:
 def test_buy_and_hold_initial_purchase() -> None:
     """Test strategy makes initial purchase."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
     af.set_broker(SimpleBroker())
@@ -46,7 +46,7 @@ def test_buy_and_hold_initial_purchase() -> None:
 def test_buy_and_hold_rebalancing() -> None:
     """Test strategy rebalances periodically."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     strategy = BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0)
     af.add_strategy(strategy)
@@ -66,7 +66,7 @@ def test_buy_and_hold_rebalancing() -> None:
 def test_buy_and_hold_partial_allocation() -> None:
     """Test strategy with partial portfolio allocation."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=0.5))
     af.set_broker(SimpleBroker())
@@ -87,7 +87,7 @@ def test_buy_and_hold_partial_allocation() -> None:
 def test_buy_and_hold_filters_events_outside_backtest() -> None:
     """Test strategy ignores events outside backtest window."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     af.add_equity("AAPL")
     strategy = BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0)
     af.add_strategy(strategy)
@@ -108,7 +108,7 @@ def test_buy_and_hold_filters_events_outside_backtest() -> None:
 def test_buy_and_hold_filters_wrong_symbol() -> None:
     """Test strategy ignores events for other symbols."""
     af = AlphaFlow()
-    af.set_data_feed(CSVDataFeed("alphaflow/tests/data/AAPL.csv"))
+    af.set_data_feed(PolarsDataFeed("alphaflow/tests/data/AAPL.csv"))
     # Add AAPL to universe but strategy only trades AAPL
     af.add_equity("AAPL")
     af.add_strategy(BuyAndHoldStrategy(symbol="AAPL", target_weight=1.0))
