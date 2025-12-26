@@ -2,20 +2,20 @@
 
 from datetime import datetime
 
-from alphaflow.data_feeds import CSVDataFeed
+from alphaflow.data_feeds import CSVDataFeed  # ty: ignore[deprecated]
 from alphaflow.events import MarketDataEvent
 
 
 def test_csv_data_feed_initialization() -> None:
     """Test CSVDataFeed initialization."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     assert data_feed.file_path.name == "AAPL.csv"
 
 
 def test_csv_data_feed_run_yields_market_data_events() -> None:
     """Test CSVDataFeed yields MarketDataEvent objects."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     events = list(
         data_feed.run(
@@ -31,7 +31,7 @@ def test_csv_data_feed_run_yields_market_data_events() -> None:
 
 def test_csv_data_feed_events_have_correct_symbol() -> None:
     """Test all events have the requested symbol."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     events = list(
         data_feed.run(
@@ -46,7 +46,7 @@ def test_csv_data_feed_events_have_correct_symbol() -> None:
 
 def test_csv_data_feed_events_sorted_by_timestamp() -> None:
     """Test events are yielded in chronological order."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     events = list(
         data_feed.run(
@@ -62,7 +62,7 @@ def test_csv_data_feed_events_sorted_by_timestamp() -> None:
 
 def test_csv_data_feed_respects_start_timestamp() -> None:
     """Test data feed only yields events after start timestamp."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
     start_timestamp = datetime(1981, 1, 1)
 
     events = list(
@@ -78,7 +78,7 @@ def test_csv_data_feed_respects_start_timestamp() -> None:
 
 def test_csv_data_feed_respects_end_timestamp() -> None:
     """Test data feed only yields events before end timestamp."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
     end_timestamp = datetime(1981, 1, 15)
 
     events = list(
@@ -94,7 +94,7 @@ def test_csv_data_feed_respects_end_timestamp() -> None:
 
 def test_csv_data_feed_event_has_all_ohlcv_fields() -> None:
     """Test MarketDataEvent has open, high, low, close, volume."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     events = list(
         data_feed.run(
@@ -117,7 +117,7 @@ def test_csv_data_feed_event_has_all_ohlcv_fields() -> None:
 
 def test_csv_data_feed_prices_are_positive() -> None:
     """Test all OHLC prices are positive."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     events = list(
         data_feed.run(
@@ -136,7 +136,7 @@ def test_csv_data_feed_prices_are_positive() -> None:
 
 def test_csv_data_feed_high_low_relationship() -> None:
     """Test high >= low for all events."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     events = list(
         data_feed.run(
@@ -152,7 +152,7 @@ def test_csv_data_feed_high_low_relationship() -> None:
 
 def test_csv_data_feed_empty_range() -> None:
     """Test data feed with date range that has no data."""
-    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+    data_feed = CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
     # Use a date range before any data exists
     events = list(
@@ -172,7 +172,7 @@ def test_deprecated_csv_data_feed() -> None:
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        CSVDataFeed("alphaflow/tests/data/AAPL.csv")
+        CSVDataFeed("alphaflow/tests/data/AAPL.csv")  # ty: ignore[deprecated]
 
         assert len(w) == 1
         assert issubclass(w[-1].category, DeprecationWarning)

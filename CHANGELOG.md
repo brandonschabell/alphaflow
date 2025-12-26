@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Replaced `Make` with `just` for development commands
 - Relaxed dependency version requirements.
+- Replace `mypy` with `ty` for type checking.
 
 ### Deprecated
 - `CSVDataFeed` - Use `PolarsDataFeed` instead for loading data from CSV files

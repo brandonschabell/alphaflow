@@ -77,13 +77,13 @@ pythonpath = ["."]
 dev = [
     "mkdocs-material>=9.7.1",
     "mkdocstrings[python]>=0.24.0",
-    "mypy>=1.18.2",
     "plotly-stubs>=0.0.6",
     "pytest>=9.0.0",
     "pytest-cov>=7.0.0",
     "pytest-httpx>=0.35.0",
     "ruff>=0.14.0",
     "rust-just>=1.45.0",
+    "ty>=0.0.7",
 ]
 
 [tool.ruff]
@@ -110,18 +110,8 @@ ignore = [
     "D213",  # multi-line-summary-second-line (conflicts with D212)
 ]
 
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_any_unimported = false
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-check_untyped_defs = true
-strict_equality = true
+[tool.ty.src]
+include = ["alphaflow"]
 
 [tool.coverage.run]
 source = ["alphaflow"]

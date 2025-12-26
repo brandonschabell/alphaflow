@@ -26,8 +26,8 @@ jobs:
         run: uv run --no-sync ruff check
       - name: Check code formatting
         run: uv run --no-sync ruff format --check
-      - name: Run mypy type checking
-        run: uv run --no-sync mypy .
+      - name: Run ty type checking
+        run: uv run --no-sync ty check
   
   test:
     name: Test Python ${{ matrix.python-version }} - ${{ matrix.resolution }}
