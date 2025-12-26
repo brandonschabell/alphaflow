@@ -27,7 +27,7 @@ make test
 ### Running Quality Checks
 
 ```bash
-make check  # Runs ruff, mypy, and tests
+make check  # Runs ruff, ty, and tests
 ```
 
 ### Code Coverage
@@ -46,7 +46,7 @@ uv run mkdocs build  # Build static site
 ## Code Style
 
 - We use **ruff** for linting and formatting
-- We use **mypy** for type checking
+- We use **ty** for type checking
 - All code must pass `make check` before being merged
 - Maintain 90%+ test coverage for new code
 
