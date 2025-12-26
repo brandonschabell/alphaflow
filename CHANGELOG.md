@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2025-12-26
 
 ### Added
 - `on_missing_price` config option - control behavior when `get_price()` cannot find data: `"raise"` (default), `"warn"`, or `"ignore"`
@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 - `CSVDataFeed` - Use `PolarsDataFeed` instead for loading data from CSV files
+
+[0.3.0]: https://github.com/brandonschabell/alphaflow/releases/tag/v0.3.0
 
 ## [0.2.0] - 2025-11-11
 
